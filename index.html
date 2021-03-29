@@ -827,8 +827,8 @@ function drawLink()
 
 function Point(x, y)
 {
-	this.col = y;
 	this.row = x;
+	this.col = y;
 }
 
 function collision2(x, y, map)
@@ -903,12 +903,15 @@ function getNewCoordinates(currentRow, currentCol)
 	pathFound = [];
 	let randRow = Math.floor(Math.random() * 12) + 4;
 	let randCol = Math.floor(Math.random() * 16);
+	
 	while(gameMap[randRow][randCol] != 2)
 	{
 		randRow = Math.floor(Math.random() * 12) + 4;
 	    randCol = Math.floor(Math.random() * 16);
 	}
 	///0-11 + 4 for rows
+	console.log("Game map at randRow and randCol: " + gameMap[randRow][randCol]);
+	console.log("Target node is: " + randRow + "   " + randCol);
 	foundPath(currentRow, currentCol, randRow, randCol);
 	while(pathFound.length == 0)
 	{
@@ -943,17 +946,19 @@ function foundPath(cR, cC, tR, tC)
 	{
 		currentNodes.push(new Point(cR + 1, cC));
 	}
+	console.log("CurrentNodes: ");
+	console.log(currentNodes);
 	
 	for(let i = 0; i < currentNodes.length; i++)
 	{	
-		visitedNodes.push(currentNodes[i]);
+		visitedNodes.push(new Point(currentNodes[i].row,currentNodes[i].col ));
 		if(currentNodes[i].row == tR &&
 		currentNodes[i].col == tC)
 		{
 			pathFound = visitedNodes;
 			break;
 		}
-		findRestOfRoute(cR, cC, tR, tC, visitedNodes)
+		findRestOfRoute(currentNodes[i].row, currentNodes[i].col, tR, tC, visitedNodes)
 	}
 	
 }
@@ -972,11 +977,22 @@ function isInNodes(targetR, targetC, nodes)
 	return isInList;
 }
 
+function copyArray(arr)
+{
+	let arr2 = [];
+	for(let i = 0; i < arr.length; i++)
+	{
+		arr2.push(new Point(arr[i].row, arr[i].col));
+	}
+	return arr2;
+}
+
 function findRestOfRoute(cR, cC, tR, tC, vNodes2)
 {
-	let vNodes = new Array(vNodes2);
 	
-	
+	let vNodes = copyArray(vNodes2);
+	console.log("visited nodes: ");
+	console.log(vNodes);
 	
 	let currentNodes = [];
 	
@@ -1008,7 +1024,7 @@ function findRestOfRoute(cR, cC, tR, tC, vNodes2)
 			currentNodes.push(new Point(cR + 1, cC));
 		}
 	}
-	if(currentNodes.length == 0)
+	if(currentNodes.length == 0 || pathFound.length > 0 || vNodes.length > 25)
 	{
 		return;
 	}
@@ -1022,6 +1038,7 @@ function findRestOfRoute(cR, cC, tR, tC, vNodes2)
 			pathFound = vNodes;
 			console.log("Path was found.");
 			return;
+
 		}
 		findRestOfRoute(currentNodes[i].row, currentNodes[i].col, 
 		tR, tC, vNodes);

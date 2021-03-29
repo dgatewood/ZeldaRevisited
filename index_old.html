@@ -36,8 +36,6 @@ let gameMap = [];
 let maps = [];
 let isAttacking = false;
 let canAttackAgain = true;
-let pathFound = [];
-let hasRun = false;
 
 function GameObject()
 {
@@ -898,138 +896,6 @@ function drawGameObjects()
 }
 
 
-function getNewCoordinates(currentRow, currentCol)
-{
-	pathFound = [];
-	let randRow = Math.floor(Math.random() * 12) + 4;
-	let randCol = Math.floor(Math.random() * 16);
-	while(gameMap[randRow][randCol] != 2)
-	{
-		randRow = Math.floor(Math.random() * 12) + 4;
-	    randCol = Math.floor(Math.random() * 16);
-	}
-	///0-11 + 4 for rows
-	foundPath(currentRow, currentCol, randRow, randCol);
-	while(pathFound.length == 0)
-	{
-		console.log("Old path didnt work, need new path..");
-		randRow = Math.floor(Math.random() * 12) + 4;
-		randCol = Math.floor(Math.random() * 16);
-		foundPath(currentRow, currentCol, randRow, randCol);
-	}
-	
-	return new Point(randRow, randCol);
-	
-}
-
-function foundPath(cR, cC, tR, tC)
-{
-	let visitedNodes = [];
-	let currentNodes = [];
-	pathFound = [];
-	if(cC >= 1 && gameMap[cR][cC - 1] == 2)
-	{
-		currentNodes.push(new Point(cR, cC - 1));
-	}
-	if(cC <= 14 && gameMap[cR][cC + 1] == 2)
-	{
-		currentNodes.push(new Point(cR, cC + 1));
-	}
-	if(cR >= 5 && gameMap[cR - 1][cC] == 2)
-	{
-		currentNodes.push(new Point(cR - 1, cC));
-	}
-	if(cR <= 14 && gameMap[cR + 1][cC] == 2)
-	{
-		currentNodes.push(new Point(cR + 1, cC));
-	}
-	
-	for(let i = 0; i < currentNodes.length; i++)
-	{	
-		visitedNodes.push(currentNodes[i]);
-		if(currentNodes[i].row == tR &&
-		currentNodes[i].col == tC)
-		{
-			pathFound = visitedNodes;
-			break;
-		}
-		findRestOfRoute(cR, cC, tR, tC, visitedNodes)
-	}
-	
-}
-
-function isInNodes(targetR, targetC, nodes)
-{
-	let isInList = false;
-	for(let i = 0; i < nodes.length; i++)
-	{
-		if(nodes[i].row == targetR && nodes[i].col == targetC)
-		{
-			isInList = true;
-			break;
-		}
-	}
-	return isInList;
-}
-
-function findRestOfRoute(cR, cC, tR, tC, vNodes2)
-{
-	let vNodes = new Array(vNodes2);
-	
-	
-	
-	let currentNodes = [];
-	
-	if(cC >= 1 && gameMap[cR][cC - 1] == 2)
-	{
-		if(!isInNodes(cR, cC - 1, vNodes))
-		{
-			currentNodes.push(new Point(cR, cC - 1));
-		}
-	}
-	if(cC <= 14 && gameMap[cR][cC + 1] == 2)
-	{
-		if(!isInNodes(cR, cC - 1, vNodes))
-		{
-			currentNodes.push(new Point(cR, cC + 1));
-		}
-	}
-	if(cR >= 5 && gameMap[cR - 1][cC] == 2)
-	{
-		if(!isInNodes(cR - 1, cC, vNodes))
-		{
-			currentNodes.push(new Point(cR - 1, cC));
-		}
-	}
-	if(cR <= 14 && gameMap[cR + 1][cC] == 2)
-	{
-		if(!isInNodes(cR +1, cC, vNodes))
-		{
-			currentNodes.push(new Point(cR + 1, cC));
-		}
-	}
-	if(currentNodes.length == 0)
-	{
-		return;
-	}
-	
-	for(let i = 0; i < currentNodes.length; i++)
-	{	
-		vNodes.push(currentNodes[i]);
-		if(currentNodes[i].row == tR &&
-		currentNodes[i].col == tC)
-		{
-			pathFound = vNodes;
-			console.log("Path was found.");
-			return;
-		}
-		findRestOfRoute(currentNodes[i].row, currentNodes[i].col, 
-		tR, tC, vNodes);
-	}
-	
-}
-
-
 function gameObjectCollision(x, y, objects)
 {
 	for(let i = 0; i < objects.length; i++)
@@ -1057,19 +923,10 @@ function draw () {
    ctx.fillStyle = "rgb(20,20,20)";
    ctx.fillRect(0,0,800,600);
    ///all code goes here
-	//drawMap(gameMap);
-	//drawLink();
-	//gameObjectCollision(linkX, linkY, gameObjects);
-	//drawGameObjects();
-	if(!hasRun)
-	{
-		let targetPoint = getNewCoordinates(11, 13);
-		console.log("targetPoint: " + targetPoint.row + "  " + targetPoint.col);
-		//foundPath(gameMap, 11, 13, targetPoint.row, targetPoint.col);
-		console.log(pathFound);
-		
-		hasRun = true;
-	}
+	drawMap(gameMap);
+	drawLink();
+	gameObjectCollision(linkX, linkY, gameObjects);
+	drawGameObjects();
    },1000/fps);
 }
 draw();

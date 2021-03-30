@@ -46,8 +46,8 @@ function GameObject()
 	this.width = 0;
 	this.height = 0;
 	this.newMap = 0;
-	this.newLinkX = 0;
-	this.newLinkY = 0;
+	this.newLinkX = -1;
+	this.newLinkY = -1;
 	this.isPortal = false;
 	this.isEnemy = false;
 	this.enemyType = 0;
@@ -56,6 +56,9 @@ function GameObject()
 	this.isAttacking = false;
 	this.health = 0;
 	this.direction = "up";
+	this.enemyPath = [];
+	this.counter = 0;
+	this.frame = 0;
 }
 
 ///Portal variables
@@ -73,14 +76,15 @@ let gameObjects7_7 = [];
 gameObjects7_7.push(gO);
 
 gO = new GameObject()
-gO.x = 155;
-gO.y = 160;
+gO.x = 160;
+gO.y = 184;
+gO.nextX = 160;
+gO.nextY = 184;
+////row 10 col 13
 gO.width = 16;
 gO.height = 16;
 gO.isEnemy = true;
 gO.enemyType = 1;
-gO.nextX = 90;
-gO.nextY = 50;
 gO.isAttacking = false;
 gO.health = 1;
 gO.direction = "up";
@@ -283,6 +287,51 @@ gO.isPortal = true;
 gameObjects7_6.push(gO);
 
 gO = new GameObject()
+gO.x = 160;
+gO.y = 184;
+gO.nextX = 160;
+gO.nextY = 184;
+////row 10 col 13
+gO.width = 16;
+gO.height = 16;
+gO.isEnemy = true;
+gO.enemyType = 1;
+gO.isAttacking = false;
+gO.health = 1;
+gO.direction = "up";
+gameObjects7_6.push(gO);
+
+gO = new GameObject()
+gO.x = 128;
+gO.y = 128;
+gO.nextX = 128;
+gO.nextY = 128;
+////row 10 col 13
+gO.width = 16;
+gO.height = 16;
+gO.isEnemy = true;
+gO.enemyType = 1;
+gO.isAttacking = false;
+gO.health = 1;
+gO.direction = "up";
+gameObjects7_6.push(gO);
+
+gO = new GameObject()
+gO.x = 112;
+gO.y = 112;
+gO.nextX = 112;
+gO.nextY = 112;
+////row 10 col 13
+gO.width = 16;
+gO.height = 16;
+gO.isEnemy = true;
+gO.enemyType = 1;
+gO.isAttacking = false;
+gO.health = 1;
+gO.direction = "up";
+gameObjects7_6.push(gO);
+
+gO = new GameObject()
 gO.x = -16;
 gO.y = 96;
 gO.width = 16;
@@ -398,6 +447,36 @@ gO.newMap = 2;
 gO.newLinkX = 1;
 gO.newLinkY = 112;
 gO.isPortal = true;
+gameObjects7_5.push(gO);
+
+gO = new GameObject()
+gO.x = 160;
+gO.y = 184;
+gO.nextX = 160;
+gO.nextY = 184;
+////row 10 col 13
+gO.width = 16;
+gO.height = 16;
+gO.isEnemy = true;
+gO.enemyType = 1;
+gO.isAttacking = false;
+gO.health = 1;
+gO.direction = "up";
+gameObjects7_5.push(gO);
+
+gO = new GameObject()
+gO.x = 32;
+gO.y = 96;
+gO.nextX = 32;
+gO.nextY = 96;
+////row 10 col 13
+gO.width = 16;
+gO.height = 16;
+gO.isEnemy = true;
+gO.enemyType = 1;
+gO.isAttacking = false;
+gO.health = 1;
+gO.direction = "up";
 gameObjects7_5.push(gO);
 
 gO = new GameObject()
@@ -581,8 +660,8 @@ maps.push(new MapBundle(map7_6, gameObjects7_6));
 maps.push(new MapBundle(map7_5, gameObjects7_5));
 maps.push(new MapBundle(map107, gameObjects107));
 
-gameObjects = maps[0].gameobjects;
-gameMap = maps[0].map;
+gameObjects = maps[3].gameobjects;
+gameMap = maps[3].map;
 
 function keyDownHandler(e){
     if(e.keyCode == 37)
@@ -868,28 +947,132 @@ function drawGameObjects()
 		{
 			if(gameObjects[i].enemyType == 1)
 			{
-				ctx.drawImage(enemies, 0, 0, 16, 16, 
-				gameObjects[i].x, gameObjects[i].y, 16, 16);
+				gameObjects[i].counter++;
+				if(gameObjects[i].x == gameObjects[i].nextX &&
+				gameObjects[i].y == gameObjects[i].nextY)
+				{
+					gameObjects[i].nextX = -1;
+					gameObjects[i].nextY = -1;
+				}
+				
+				
+				if(gameObjects[i].enemyPath.length == 0)
+				{
+					let currRow = Math.floor(gameObjects[i].y/16);
+					let currCol = Math.floor(gameObjects[i].x/16);
+					getNewCoordinates(currRow, currCol);
+					gameObjects[i].enemyPath = copyArray(pathFound);
+				}
+			
+				
+				if(gameObjects[i].enemyPath[0] != null && 
+				gameObjects[i].nextX == -1 && 
+				gameObjects[i].nextY == -1)
+				{
+					gameObjects[i].nextX = gameObjects[i].enemyPath[0].col * 16;
+					gameObjects[i].nextY = gameObjects[i].enemyPath[0].row * 16;
+					gameObjects[i].enemyPath.splice(0,1);
+				}
+				if(gameObjects[i].counter >= 10)
+				{
+					gameObjects[i].frame++;
+					gameObjects[i].counter = 0;
+					if(gameObjects[i].frame > 1)
+					{
+						gameObjects[i].frame = 0;
+					}
+				}
+				if(gameObjects[i].direction == "down")
+				{
+					if(gameObjects[i].frame == 0)
+					{
+						ctx.drawImage(enemies, 0, 0, 16, 16, 
+						gameObjects[i].x, gameObjects[i].y, 16, 16);
+					}
+					if(gameObjects[i].frame == 1)
+					{
+						ctx.drawImage(enemies, 0, 30, 16, 16, 
+						gameObjects[i].x, gameObjects[i].y, 16, 16);
+					}
+				}
+				else if(gameObjects[i].direction == "up")
+				{
+					if(gameObjects[i].frame == 0)
+					{
+						ctx.drawImage(enemies, 60, 0, 16, 16, 
+						gameObjects[i].x, gameObjects[i].y, 16, 16);
+					}
+					if(gameObjects[i].frame == 1)
+					{
+						ctx.drawImage(enemies, 60, 30, 16, 16, 
+						gameObjects[i].x, gameObjects[i].y, 16, 16);
+					}
+				}
+				else if(gameObjects[i].direction == "left")
+				{
+					if(gameObjects[i].frame == 0)
+					{
+						ctx.drawImage(enemies, 30, 0, 16, 16, 
+						gameObjects[i].x, gameObjects[i].y, 16, 16);
+					}
+					if(gameObjects[i].frame == 1)
+					{
+						ctx.drawImage(enemies, 30, 30, 16, 16, 
+						gameObjects[i].x, gameObjects[i].y, 16, 16);
+					}
+				}
+				else
+				{
+					if(gameObjects[i].frame == 0)
+					{
+						ctx.drawImage(enemies, 90, 0, 16, 16, 
+						gameObjects[i].x, gameObjects[i].y, 16, 16);
+					}
+					if(gameObjects[i].frame == 1)
+					{
+						ctx.drawImage(enemies, 90, 30, 16, 16, 
+						gameObjects[i].x, gameObjects[i].y, 16, 16);
+					}
+				}
+				
+				
 				if(gameObjects[i].x != gameObjects[i].nextX)
 				{
 					if(gameObjects[i].nextX > gameObjects[i].x)
 					{
-						gameObjects[i].x += 1;
+						if(gameObjects[i].counter%2 == 0)
+						{
+							gameObjects[i].x += 1;
+						}
+						gameObjects[i].direction = "right";
 					}
-					else
+					else if(gameObjects[i].nextX < gameObjects[i].x)
 					{
-						gameObjects[i].x -= 1;
+						if(gameObjects[i].counter%2 == 0)
+						{
+							gameObjects[i].x -= 1;
+						}
+						gameObjects[i].direction = "left";
 					}
+					
 				}
 				else if(gameObjects[i].y != gameObjects[i].nextY)
 				{
 					if(gameObjects[i].nextY > gameObjects[i].y)
 					{
-						gameObjects[i].y += 1;
+						if(gameObjects[i].counter%2 == 0)
+						{
+							gameObjects[i].y += 1;
+						}
+						gameObjects[i].direction = "down";
 					}
-					else
+					else if(gameObjects[i].nextY < gameObjects[i].y)
 					{
-						gameObjects[i].y -= 1;
+						if(gameObjects[i].counter%2 == 0)
+						{
+							gameObjects[i].y -= 1;
+						}
+						gameObjects[i].direction = "up";
 					}
 				}
 			}
@@ -901,17 +1084,19 @@ function drawGameObjects()
 function getNewCoordinates(currentRow, currentCol)
 {
 	pathFound = [];
-	let randRow = Math.floor(Math.random() * 12) + 4;
+	let randRow = Math.floor(Math.random() * 11) + 4;
 	let randCol = Math.floor(Math.random() * 16);
 	
+	//while(randRow > 14 || randRow < 0 ||
+	//randCol > 15 || randRow < 0 ||
 	while(gameMap[randRow][randCol] != 2)
 	{
-		randRow = Math.floor(Math.random() * 12) + 4;
+		randRow = Math.floor(Math.random() * 11) + 4;
 	    randCol = Math.floor(Math.random() * 16);
 	}
 	///0-11 + 4 for rows
-	console.log("Game map at randRow and randCol: " + gameMap[randRow][randCol]);
-	console.log("Target node is: " + randRow + "   " + randCol);
+	//console.log("Game map at randRow and randCol: " + gameMap[randRow][randCol]);
+	//console.log("Target node is: " + randRow + "   " + randCol);
 	foundPath(currentRow, currentCol, randRow, randCol);
 	while(pathFound.length == 0)
 	{
@@ -921,7 +1106,7 @@ function getNewCoordinates(currentRow, currentCol)
 		foundPath(currentRow, currentCol, randRow, randCol);
 	}
 	
-	return new Point(randRow, randCol);
+	//return new Point(randRow, randCol);
 	
 }
 
@@ -929,7 +1114,6 @@ function foundPath(cR, cC, tR, tC)
 {
 	let visitedNodes = [];
 	let currentNodes = [];
-	pathFound = [];
 	if(cC >= 1 && gameMap[cR][cC - 1] == 2)
 	{
 		currentNodes.push(new Point(cR, cC - 1));
@@ -946,9 +1130,9 @@ function foundPath(cR, cC, tR, tC)
 	{
 		currentNodes.push(new Point(cR + 1, cC));
 	}
-	console.log("CurrentNodes: ");
-	console.log(currentNodes);
-	
+	//console.log("CurrentNodes: ");
+	//console.log(currentNodes);
+	visitedNodes.push(new Point(cR, cC));
 	for(let i = 0; i < currentNodes.length; i++)
 	{	
 		visitedNodes.push(new Point(currentNodes[i].row,currentNodes[i].col ));
@@ -991,8 +1175,8 @@ function findRestOfRoute(cR, cC, tR, tC, vNodes2)
 {
 	
 	let vNodes = copyArray(vNodes2);
-	console.log("visited nodes: ");
-	console.log(vNodes);
+	//console.log("visited nodes: ");
+	//console.log(vNodes);
 	
 	let currentNodes = [];
 	
@@ -1005,7 +1189,7 @@ function findRestOfRoute(cR, cC, tR, tC, vNodes2)
 	}
 	if(cC <= 14 && gameMap[cR][cC + 1] == 2)
 	{
-		if(!isInNodes(cR, cC - 1, vNodes))
+		if(!isInNodes(cR, cC + 1, vNodes))
 		{
 			currentNodes.push(new Point(cR, cC + 1));
 		}
@@ -1024,19 +1208,19 @@ function findRestOfRoute(cR, cC, tR, tC, vNodes2)
 			currentNodes.push(new Point(cR + 1, cC));
 		}
 	}
-	if(currentNodes.length == 0 || pathFound.length > 0 || vNodes.length > 25)
+	if(currentNodes.length == 0 || pathFound.length > 0 || vNodes.length > 30)
 	{
 		return;
 	}
 	
 	for(let i = 0; i < currentNodes.length; i++)
 	{	
-		vNodes.push(currentNodes[i]);
+		vNodes.push(new Point(currentNodes[i].row, currentNodes[i].col));
 		if(currentNodes[i].row == tR &&
 		currentNodes[i].col == tC)
 		{
-			pathFound = vNodes;
-			console.log("Path was found.");
+			pathFound = copyArray(vNodes);
+			//console.log("Path was found.");
 			return;
 
 		}
@@ -1074,19 +1258,10 @@ function draw () {
    ctx.fillStyle = "rgb(20,20,20)";
    ctx.fillRect(0,0,800,600);
    ///all code goes here
-	//drawMap(gameMap);
-	//drawLink();
-	//gameObjectCollision(linkX, linkY, gameObjects);
-	//drawGameObjects();
-	if(!hasRun)
-	{
-		let targetPoint = getNewCoordinates(11, 13);
-		console.log("targetPoint: " + targetPoint.row + "  " + targetPoint.col);
-		//foundPath(gameMap, 11, 13, targetPoint.row, targetPoint.col);
-		console.log(pathFound);
-		
-		hasRun = true;
-	}
+	drawMap(gameMap);
+	drawLink();
+	gameObjectCollision(linkX, linkY, gameObjects);
+	drawGameObjects();
    },1000/fps);
 }
 draw();

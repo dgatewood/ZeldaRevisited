@@ -23,6 +23,8 @@ let link1 = new Image();
 link1.src = "link.png";
 let enemies = new Image();
 enemies.src = "enemies.png";
+let hud = new Image();
+hud.src = "pausescreen.png";
 let fps = 60;
 let animationCounter = 0;
 let currentAnimation = 0;
@@ -30,6 +32,8 @@ let animationSpeed = 10;
 let lastButtonPressed = "up";
 let linkY = 135;
 let linkX = 116;
+let linkHearts = 16;
+let currentLinkHearts = 11.5;
 let blocks = [];
 let gameObjects = [];
 let gameMap = [];
@@ -1142,7 +1146,8 @@ function foundPath(cR, cC, tR, tC)
 			pathFound = visitedNodes;
 			break;
 		}
-		findRestOfRoute(currentNodes[i].row, currentNodes[i].col, tR, tC, visitedNodes)
+		findRestOfRoute(currentNodes[i].row, currentNodes[i].col, 
+						tR, tC, visitedNodes)
 	}
 	
 }
@@ -1173,10 +1178,7 @@ function copyArray(arr)
 
 function findRestOfRoute(cR, cC, tR, tC, vNodes2)
 {
-	
 	let vNodes = copyArray(vNodes2);
-	//console.log("visited nodes: ");
-	//console.log(vNodes);
 	
 	let currentNodes = [];
 	
@@ -1208,7 +1210,8 @@ function findRestOfRoute(cR, cC, tR, tC, vNodes2)
 			currentNodes.push(new Point(cR + 1, cC));
 		}
 	}
-	if(currentNodes.length == 0 || pathFound.length > 0 || vNodes.length > 30)
+	if(currentNodes.length == 0 || pathFound.length > 0 || 
+		vNodes.length > 30)
 	{
 		return;
 	}
@@ -1251,6 +1254,69 @@ function gameObjectCollision(x, y, objects)
 		}	
 }
 
+function drawHUD()
+{
+	ctx.drawImage(hud, 258, 11, 256, 56, 
+				0, 0, 256, 56);
+	ctx.drawImage(hud, 2, 112, 16, 64, 
+				176, 32, 64,  16);
+	//draw Hearts
+	let fullHearts = Math.floor(currentLinkHearts)
+	let halfHearts = currentLinkHearts - fullHearts;
+	for(let i = 0; i < linkHearts; i++)
+	{
+		let heartY = 40;
+		let heartX = 176 + (i * 8);
+		if(i > 7)
+			{
+				heartY = 40 - 8;
+				heartX -= 64;
+			}
+			else
+			{
+				heartY = 40;
+			}
+		ctx.drawImage(hud, 627, 117, 8, 8, 
+				heartX, heartY, 8, 8);
+	}
+	let halfHeartX = 0;
+	let halfHeartY = 0;
+	for(let i = 0; i < fullHearts; i++)
+	{
+		let heartY = 40;
+		let heartX = 176 + (i * 8);
+		if(i > 7)
+			{
+				heartY = 40 - 8;
+				heartX -= 64;
+			}
+			else
+			{
+				heartY = 40;
+			}
+		ctx.drawImage(hud, 645, 117, 8, 8, 
+				heartX, heartY, 8, 8);
+		if(i == fullHearts - 1)
+		{
+			halfHeartX = 176 + (i * 8) + 8 - 64;
+			if(i > 7)
+			{
+				halfHeartY = 40 - 8;
+			}
+			else
+			{
+				halfHeartY = 40;
+			}
+		}	
+	}
+	
+	if(halfHearts > 0)
+	{
+		ctx.drawImage(hud, 636, 117, 8, 8, 
+				halfHeartX, halfHeartY, 8, 8);
+	}
+}
+
 
 function draw () {
    setTimeout(function() {
@@ -1258,10 +1324,12 @@ function draw () {
    ctx.fillStyle = "rgb(20,20,20)";
    ctx.fillRect(0,0,800,600);
    ///all code goes here
+    
 	drawMap(gameMap);
 	drawLink();
 	gameObjectCollision(linkX, linkY, gameObjects);
 	drawGameObjects();
+	drawHUD();
    },1000/fps);
 }
 draw();

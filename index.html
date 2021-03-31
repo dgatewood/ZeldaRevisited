@@ -1040,7 +1040,7 @@ function drawGameObjects()
 				{
 					if(gameObjects[i].nextX > gameObjects[i].x)
 					{
-						if(gameObjects[i].counter%2 == 0)
+						if(gameObjects[i].counter%3 == 0)
 						{
 							gameObjects[i].x += 1;
 						}
@@ -1048,7 +1048,7 @@ function drawGameObjects()
 					}
 					else if(gameObjects[i].nextX < gameObjects[i].x)
 					{
-						if(gameObjects[i].counter%2 == 0)
+						if(gameObjects[i].counter%3 == 0)
 						{
 							gameObjects[i].x -= 1;
 						}
@@ -1060,7 +1060,7 @@ function drawGameObjects()
 				{
 					if(gameObjects[i].nextY > gameObjects[i].y)
 					{
-						if(gameObjects[i].counter%2 == 0)
+						if(gameObjects[i].counter%3 == 0)
 						{
 							gameObjects[i].y += 1;
 						}
@@ -1068,7 +1068,7 @@ function drawGameObjects()
 					}
 					else if(gameObjects[i].nextY < gameObjects[i].y)
 					{
-						if(gameObjects[i].counter%2 == 0)
+						if(gameObjects[i].counter%3 == 0)
 						{
 							gameObjects[i].y -= 1;
 						}

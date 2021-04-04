@@ -1250,6 +1250,11 @@ function gameObjectCollision(x, y, objects)
 						linkY = objects[i].newLinkY;
 						
 					}
+					if(objects[i].isEnemy)
+					{
+						console.log("we are under attack.");
+						
+					}
 				}
 		}	
 }

@@ -33,15 +33,18 @@ let lastButtonPressed = "up";
 let linkY = 135;
 let linkX = 116;
 let linkHearts = 16;
+let linkNeedsToBounce = false;
 let currentLinkHearts = 11.5;
 let blocks = [];
 let gameObjects = [];
+let gameAttacks
 let gameMap = [];
 let maps = [];
 let isAttacking = false;
 let canAttackAgain = true;
 let pathFound = [];
 let hasRun = false;
+let hasSword = true;
 
 function GameObject()
 {
@@ -63,6 +66,9 @@ function GameObject()
 	this.enemyPath = [];
 	this.counter = 0;
 	this.frame = 0;
+	this.needsBounce = false;
+	this.bounceX = 0;
+	this.bounceY = 0;
 }
 
 ///Portal variables
@@ -737,7 +743,7 @@ function drawLink()
 {
 	let speed = 2;
 	animationCounter++;
-	if(isAttacking)
+	if(isAttacking && hasSword)
 	{
 		if(currentAnimation == 0)
 			{
@@ -1234,29 +1240,69 @@ function findRestOfRoute(cR, cC, tR, tC, vNodes2)
 }
 
 
-function gameObjectCollision(x, y, objects)
+function gameObjectCollision(x, y, objects, isLink, isSword, isBomb, isCandle, isArrow, direction)
 {
-	for(let i = 0; i < objects.length; i++)
-		{
+	if(isLink)
+	{
+		for(let i = 0; i < objects.length; i++)
+			{
+				if (x <= objects[i].x + objects[i].width &&
+				   x + 16 >= objects[i].x &&
+				   y  <= objects[i].y + objects[i].height &&
+				   y + 16 >= objects[i].y ) {
+						if(objects[i].isPortal)
+						{
+							gameMap = maps[objects[i].newMap].map;
+							gameObjects = maps[objects[i].newMap].gameobjects;
+							linkX = objects[i].newLinkX;
+							linkY = objects[i].newLinkY;
+							
+						}
+						if(objects[i].isEnemy)
+						{
+							//
+							linkNeedsToBounce = true;
+						}
+					}
+			}
+	}
+	else
+	{
+		for(let i = 0; i < objects.length; i++)
+			{
 			if (x <= objects[i].x + objects[i].width &&
-			   x + 16 >= objects[i].x &&
-			   y  <= objects[i].y + objects[i].height &&
-			   y + 16 >= objects[i].y ) {
-					if(objects[i].isPortal)
-					{
-						gameMap = maps[objects[i].newMap].map;
-						gameObjects = maps[objects[i].newMap].gameobjects;
-						linkX = objects[i].newLinkX;
-						linkY = objects[i].newLinkY;
-						
-					}
-					if(objects[i].isEnemy)
-					{
-						console.log("we are under attack.");
-						
-					}
-				}
-		}	
+			x >= objects[i].x &&
+			y  <= objects[i].y + objects[i].height &&
+			y >= objects[i].y ) 
+			{
+				if(objects[i].isEnemy)
+						{
+							//
+							objects[i].health -= 1;
+							objects[i].needsBounce = true;
+							
+							objects[i].bounceX = 
+							objects[i].bounceY = 
+						}
+			}
+		}
+	}
+}
+
+function getBounceLoc(gObject, ignoresObjects, direction)
+{
+	let bX = 0;
+	let bY = 0;
+	let currRow = Math.floor(gameObjects[i].y/16);
+	let currCol = Math.floor(gameObjects[i].x/16);
+	if(direction == "up")
+	{
+		if(gameMap[currRow-1][currCol] == 2)
+		{
+			gObject.x -= 16;
+		}
+	}
+	return new Point(bX, bY);
 }
 
 function drawHUD()
@@ -1332,7 +1378,7 @@ function draw () {
     
 	drawMap(gameMap);
 	drawLink();
-	gameObjectCollision(linkX, linkY, gameObjects);
+	gameObjectCollision(linkX, linkY, gameObjects, true, false, false, false, false);
 	drawGameObjects();
 	drawHUD();
    },1000/fps);

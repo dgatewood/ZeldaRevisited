@@ -1240,7 +1240,8 @@ function findRestOfRoute(cR, cC, tR, tC, vNodes2)
 }
 
 
-function gameObjectCollision(x, y, objects, isLink, isSword, isBomb, isCandle, isArrow, direction)
+function gameObjectCollision(x, y, objects, isLink, isSword, isBomb, 
+							isCandle, isArrow, direction)
 {
 	if(isLink)
 	{
@@ -1281,8 +1282,8 @@ function gameObjectCollision(x, y, objects, isLink, isSword, isBomb, isCandle, i
 							objects[i].health -= 1;
 							objects[i].needsBounce = true;
 							
-							objects[i].bounceX = 
-							objects[i].bounceY = 
+							//objects[i].bounceX = 
+							//objects[i].bounceY = 
 						}
 			}
 		}
@@ -1299,10 +1300,31 @@ function getBounceLoc(gObject, ignoresObjects, direction)
 	{
 		if(gameMap[currRow-1][currCol] == 2)
 		{
-			gObject.x -= 16;
+			gObject.bounceY = gObject.y - 16 ;
 		}
 	}
-	return new Point(bX, bY);
+	if(direction == "down")
+	{
+		if(gameMap[currRow+1][currCol] == 2)
+		{
+			gObject.bounceY = gObject.y + 16 ;
+		}
+	}
+	if(direction == "left")
+	{
+		if(gameMap[currRow][currCol-1] == 2)
+		{
+			gObject.bounceX = gObject.x - 16 ;
+		}
+	}
+	if(direction == "right")
+	{
+		if(gameMap[currRow][currCol+1] == 2)
+		{
+			gObject.bounceX = gObject.x + 16 ;
+		}
+	}
+	//return new Point(bX, bY);
 }
 
 function drawHUD()

@@ -774,21 +774,33 @@ function drawLink()
 				{
 					ctx.drawImage(link1, 0, 84, 
 					16, 27, linkX, linkY, 16, 27);
+					gameObjectCollision(linkX + 8, linkY + 27, gameObjects, 
+							false, true, false, 
+							false, false, "down");
 				}
 				if(lastButtonPressed == "up")
 				{
 					ctx.drawImage(link1, 62, 84, 
 					16, 26, linkX, linkY-14, 16, 26);
+					gameObjectCollision(linkX + 8, linkY-14, gameObjects, 
+							false, true, false, 
+							false, false, "up");
 				}
 				if(lastButtonPressed == "left")
 				{
 					ctx.drawImage(link1, 22, 84, 
 					26, 27, linkX - 10, linkY - 8, 27, 27);
+					gameObjectCollision(linkX - 10, linkY +13, gameObjects, 
+							false, true, false, 
+							false, false, "left");
 				}
 				if(lastButtonPressed == "right")
 				{
 					ctx.drawImage(link1, 84, 84, 
 					30, 26, linkX, linkY - 8, 26, 26);
+					gameObjectCollision(linkX+ 26, linkY+ 13, gameObjects, 
+							false, true, false, 
+							false, false, "right");
 				};
 			}
 			if(animationCounter >= 6)
@@ -1045,44 +1057,80 @@ function drawGameObjects()
 					}
 				}
 				
-				
-				if(gameObjects[i].x != gameObjects[i].nextX)
+				if(gameObjects[i].needsBounce)
 				{
-					if(gameObjects[i].nextX > gameObjects[i].x)
+					if(gameObjects[i].x != gameObjects[i].bounceX)
 					{
-						if(gameObjects[i].counter%3 == 0)
+						if(gameObjects[i].bounceX > gameObjects[i].x)
 						{
-							gameObjects[i].x += 1;
+							gameObjects[i].x += 4;
 						}
-						gameObjects[i].direction = "right";
+						else if(gameObjects[i].bounceX < gameObjects[i].x)
+						{
+							gameObjects[i].x -= 4;
+						}
 					}
-					else if(gameObjects[i].nextX < gameObjects[i].x)
+					else if(gameObjects[i].y != gameObjects[i].bounceY)
 					{
-						if(gameObjects[i].counter%3 == 0)
+						if(gameObjects[i].bounceY > gameObjects[i].y)
 						{
-							gameObjects[i].x -= 1;
+							gameObjects[i].y += 4;
 						}
-						gameObjects[i].direction = "left";
+						else if(gameObjects[i].bounceY < gameObjects[i].y)
+						{
+							gameObjects[i].y -= 4;
+						}
 					}
-					
+					else
+					{
+						gameObjects[i].needsBounce = false;
+						if(gameObjects[i].health <= 0)
+						{
+							console.log("its health is: " + gameObjects[i].health);
+							gameObjects.splice(i,1);
+						}
+					}
 				}
-				else if(gameObjects[i].y != gameObjects[i].nextY)
+				else
 				{
-					if(gameObjects[i].nextY > gameObjects[i].y)
+					if(gameObjects[i].x != gameObjects[i].nextX)
 					{
-						if(gameObjects[i].counter%3 == 0)
+						if(gameObjects[i].nextX > gameObjects[i].x)
 						{
-							gameObjects[i].y += 1;
+							if(gameObjects[i].counter%3 == 0)
+							{
+								gameObjects[i].x += 1;
+							}
+							gameObjects[i].direction = "right";
 						}
-						gameObjects[i].direction = "down";
+						else if(gameObjects[i].nextX < gameObjects[i].x)
+						{
+							if(gameObjects[i].counter%3 == 0)
+							{
+								gameObjects[i].x -= 1;
+							}
+							gameObjects[i].direction = "left";
+						}
+						
 					}
-					else if(gameObjects[i].nextY < gameObjects[i].y)
+					else if(gameObjects[i].y != gameObjects[i].nextY)
 					{
-						if(gameObjects[i].counter%3 == 0)
+						if(gameObjects[i].nextY > gameObjects[i].y)
 						{
-							gameObjects[i].y -= 1;
+							if(gameObjects[i].counter%3 == 0)
+							{
+								gameObjects[i].y += 1;
+							}
+							gameObjects[i].direction = "down";
 						}
-						gameObjects[i].direction = "up";
+						else if(gameObjects[i].nextY < gameObjects[i].y)
+						{
+							if(gameObjects[i].counter%3 == 0)
+							{
+								gameObjects[i].y -= 1;
+							}
+							gameObjects[i].direction = "up";
+						}
 					}
 				}
 			}
@@ -1281,9 +1329,8 @@ function gameObjectCollision(x, y, objects, isLink, isSword, isBomb,
 							//
 							objects[i].health -= 1;
 							objects[i].needsBounce = true;
-							
-							//objects[i].bounceX = 
-							//objects[i].bounceY = 
+							getBounceLoc(objects[i], false,
+									direction);
 						}
 			}
 		}
@@ -1292,15 +1339,14 @@ function gameObjectCollision(x, y, objects, isLink, isSword, isBomb,
 
 function getBounceLoc(gObject, ignoresObjects, direction)
 {
-	let bX = 0;
-	let bY = 0;
-	let currRow = Math.floor(gameObjects[i].y/16);
-	let currCol = Math.floor(gameObjects[i].x/16);
+	let currRow = Math.floor(gObject.y/16);
+	let currCol = Math.floor(gObject.x/16);
 	if(direction == "up")
 	{
 		if(gameMap[currRow-1][currCol] == 2)
 		{
 			gObject.bounceY = gObject.y - 16 ;
+			gObject.bounceX = gObject.x;
 		}
 	}
 	if(direction == "down")
@@ -1308,6 +1354,7 @@ function getBounceLoc(gObject, ignoresObjects, direction)
 		if(gameMap[currRow+1][currCol] == 2)
 		{
 			gObject.bounceY = gObject.y + 16 ;
+			gObject.bounceX = gObject.x;
 		}
 	}
 	if(direction == "left")
@@ -1315,6 +1362,7 @@ function getBounceLoc(gObject, ignoresObjects, direction)
 		if(gameMap[currRow][currCol-1] == 2)
 		{
 			gObject.bounceX = gObject.x - 16 ;
+			gObject.bounceY = gObject.y;
 		}
 	}
 	if(direction == "right")
@@ -1322,9 +1370,10 @@ function getBounceLoc(gObject, ignoresObjects, direction)
 		if(gameMap[currRow][currCol+1] == 2)
 		{
 			gObject.bounceX = gObject.x + 16 ;
+			gObject.bounceY = gObject.y;
 		}
 	}
-	//return new Point(bX, bY);
+	console.log("New bx and by is: " + gObject.bounceX + "  " + gObject.bounceY);
 }
 
 function drawHUD()

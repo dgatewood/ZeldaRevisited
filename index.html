@@ -49,6 +49,8 @@ let canAttackAgain = true;
 let pathFound = [];
 let hasRun = false;
 let hasSword = true;
+let rupeeAmount = 99;
+
 
 function GameObject()
 {
@@ -73,8 +75,9 @@ function GameObject()
 	this.needsBounce = false;
 	this.bounceX = 0;
 	this.bounceY = 0;
-	this.isRupee = true;
+	this.isRupee = false;
 	this.rupeeValue = 1;
+	this.rupeeImage = 0;
 }
 
 ///Portal variables
@@ -977,15 +980,24 @@ function drawGameObjects()
 	{
 		if(gameObjects[i].isRupee)
 		{
-			if(gameObjects[i].rupeeValue == 1)
+			gameObjects[i].counter+=1;
+			if(gameObjects[i].counter%5==0)
 			{
-				ctx.drawImage(enemies, 0, 30, 16, 16, 
-						gameObjects[i].x, gameObjects[i].y, 16, 16);
+				gameObjects[i].rupeeImage+=1;
+			}
+			if(gameObjects[i].rupeeImage > 1)
+			{
+				gameObjects[i].rupeeImage = 0;
+			}
+			if(gameObjects[i].rupeeImage == 0)
+			{
+				ctx.drawImage(link1, 244, 225, 8, 16, 
+						gameObjects[i].x, gameObjects[i].y, 8, 16);
 			}
 			else
 			{
-				ctx.drawImage(enemies, 0, 30, 16, 16, 
-						gameObjects[i].x, gameObjects[i].y, 16, 16);
+				ctx.drawImage(link1, 274, 225, 8, 16, 
+						gameObjects[i].x, gameObjects[i].y, 8, 16);
 			}
 		}
 		if(gameObjects[i].isEnemy)
@@ -1110,30 +1122,20 @@ function drawGameObjects()
 						if(gameObjects[i].health <= 0)
 						{
 							console.log("its health is: " + gameObjects[i].health);
-							gameObjects.splice(i,1);
+							
 							let rupeeChance = Math.floor(Math.random()*10);
-							if(rupeeChance == 0)
+							if(rupeeChance < 2)
 							{
 								gO = new GameObject()
-								gO.x = gameObjects[i].x;
+								gO.x = gameObjects[i].x + 4;
 								gO.y = gameObjects[i].y;
-								gO.width = 16;
-								gO.height = 16;
-								gO.isRupee = true;
-								gO.rupeeValue = 5;
-								gameObjects.push(gO);
-							}
-							else
-							{
-								gO = new GameObject()
-								gO.x = gameObjects[i].x;
-								gO.y = gameObjects[i].y;
-								gO.width = 16;
+								gO.width = 8;
 								gO.height = 16;
 								gO.isRupee = true;
 								gO.rupeeValue = 1;
 								gameObjects.push(gO);
 							}
+							gameObjects.splice(i,1);
 						}
 					}
 				}
@@ -1502,6 +1504,18 @@ function drawHUD()
 	{
 		ctx.drawImage(hud, 636, 117, 8, 8, 
 				halfHeartX, halfHeartY, 8, 8);
+	}
+	
+	
+	////This draws the rupee values
+	///cover with black
+	ctx.drawImage(hud, 354, 36, 24, 6, 
+				96, 10, 24, 50);
+	///124
+	if(rupeeAmount < 100)
+	{
+		ctx.drawImage(hud, 519, 117, 8, 8, 
+				96, 16, 8, 8);
 	}
 }
 

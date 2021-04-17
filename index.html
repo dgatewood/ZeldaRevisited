@@ -1516,6 +1516,25 @@ function drawHUD()
 	{
 		ctx.drawImage(hud, 519, 117, 8, 8, 
 				96, 16, 8, 8);
+		let firstNum = rupeeAmount %10;
+		ctx.drawImage(hud, 528 + (8*firstNum) + (1*firstNum), 117, 8, 8, 
+				96 + 16, 16, 8, 8);
+		let secondNum = Math.floor(rupeeAmount/10);
+		ctx.drawImage(hud, 528 + (8*secondNum) + (1*secondNum), 117, 8, 8, 
+				96 + 8, 16, 8, 8);
+	}
+	else{
+		let firstNum = rupeeAmount %10;
+		ctx.drawImage(hud, 528 + (8*firstNum) + (1*firstNum), 117, 8, 8, 
+				96 + 16, 16, 8, 8);
+		let secondNum = Math.floor(rupeeAmount/10);
+		let thirdNum = Math.floor(rupeeAmount/ 100) * 100;
+		secondNum = ((rupeeAmount - thirdNum) - firstNum) / 10;
+		ctx.drawImage(hud, 528 + (8*secondNum) + (1*secondNum), 117, 8, 8, 
+				96 + 8, 16, 8, 8);
+		thirdNum = Math.floor(rupeeAmount / 100);
+		ctx.drawImage(hud, 528 + (8*thirdNum) + (1*thirdNum), 117, 8, 8, 
+				96 , 16, 8, 8);
 	}
 }
 

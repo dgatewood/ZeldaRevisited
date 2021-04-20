@@ -49,8 +49,14 @@ let canAttackAgain = true;
 let pathFound = [];
 let hasRun = false;
 let hasSword = true;
-let rupeeAmount = 99;
+let rupeeAmount = 0;
 
+function playSound(source)
+{
+	let sound = new Audio();
+	sound.src = source;
+	sound.play();
+}
 
 function GameObject()
 {
@@ -708,6 +714,7 @@ function keyDownHandler(e){
             isAttacking = true;
 			currentAnimation = 0;
 			canAttackAgain = false;
+			playSound("./sounds/LOZ_sword_slash.wav")
         }
 	if(e.keyCode == 13 && !hasGameStarted)
 	{
@@ -787,7 +794,7 @@ function drawLink()
 				{
 					ctx.drawImage(link1, 0, 84, 
 					16, 27, linkX, linkY, 16, 27);
-					gameObjectCollision(linkX + 8, linkY + 27, gameObjects, 
+					gameObjectCollision(linkX + 7, linkY + 16, gameObjects, 
 							false, true, false, 
 							false, false, "down");
 				}
@@ -795,7 +802,7 @@ function drawLink()
 				{
 					ctx.drawImage(link1, 62, 84, 
 					16, 26, linkX, linkY-14, 16, 26);
-					gameObjectCollision(linkX + 8, linkY-14, gameObjects, 
+					gameObjectCollision(linkX + 5, linkY-14, gameObjects, 
 							false, true, false, 
 							false, false, "up");
 				}
@@ -803,7 +810,7 @@ function drawLink()
 				{
 					ctx.drawImage(link1, 22, 84, 
 					26, 27, linkX - 10, linkY - 8, 27, 27);
-					gameObjectCollision(linkX - 10, linkY +13, gameObjects, 
+					gameObjectCollision(linkX - 10, linkY -1,  gameObjects, 
 							false, true, false, 
 							false, false, "left");
 				}
@@ -811,7 +818,7 @@ function drawLink()
 				{
 					ctx.drawImage(link1, 84, 84, 
 					30, 26, linkX, linkY - 8, 26, 26);
-					gameObjectCollision(linkX+ 26, linkY+ 13, gameObjects, 
+					gameObjectCollision(linkX+ 16, linkY -1, gameObjects, 
 							false, true, false, 
 							false, false, "right");
 				};
@@ -1360,17 +1367,33 @@ function gameObjectCollision(x, y, objects, isLink, isSword, isBomb,
 							//
 							linkNeedsToBounce = true;
 						}
+						if(objects[i].isRupee)
+						{
+							rupeeAmount += 1;
+							objects.splice(i,1);
+							playSound("./sounds/LOZ_get_rupee.wav");
+						}
 					}
 			}
 	}
+	////currently for sword attack
 	else
 	{
+		let swordW = 11;
+		let swordH = 3;
+		if(lastButtonPressed == "up" ||
+			lastButtonPressed == "down")
+		{
+			swordW = 3;
+			swordH = 11;
+		}
+		
 		for(let i = 0; i < objects.length; i++)
 			{
 			if (x <= objects[i].x + objects[i].width &&
-			x >= objects[i].x &&
+			x + swordW>= objects[i].x &&
 			y  <= objects[i].y + objects[i].height &&
-			y >= objects[i].y ) 
+			y + swordH >= objects[i].y ) 
 			{
 				if(objects[i].isEnemy)
 						{
@@ -1379,6 +1402,14 @@ function gameObjectCollision(x, y, objects, isLink, isSword, isBomb,
 							objects[i].needsBounce = true;
 							getBounceLoc(objects[i], false,
 									direction);
+							if(objects[i].health == 0)
+							{
+								playSound("./sounds/LOZ_enemy_die.wav");
+							}
+							else
+							{
+							    playSound("./sounds/LOZ_enemy_hit.wav");
+							}
 						}
 			}
 		}

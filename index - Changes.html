@@ -52,6 +52,8 @@ let hasSword = true;
 let rupeeAmount = 0;
 let linkBounceY = -1;
 let linkBounceX = -1;
+let linkIsInvincible = false;
+let invincibleTime = 0;
 
 function playSound(source)
 {
@@ -86,6 +88,19 @@ function GameObject()
 	this.isRupee = false;
 	this.rupeeValue = 1;
 	this.rupeeImage = 0;
+	this.isText = false;
+	this.line1Full = "";
+	this.line2Full = "";
+	this.line1Current = "";
+	this.line2Current = "";
+	this.line1X = 0;
+	this.line1Y = 0;
+	this.line2X = 0;
+	this.line2Y = 0;
+	this.isOldMan = false;
+	this.isPickUpItem = false;
+	this.pickUpItemNum = 0;
+	this.isFlame = false;
 }
 
 ///Portal variables
@@ -608,6 +623,40 @@ gO.newLinkX = 68;
 gO.newLinkY = 96;
 gO.isPortal = true;
 gameObjectsWoodSword.push(gO);
+
+gO = new GameObject()
+gO.x = (4*16) + 8;
+gO.y = (8*16);
+gO.width = 16;
+gO.height = 16;
+gO.isFlame= true;
+gameObjectsWoodSword.push(gO);
+
+gO = new GameObject()
+gO.x = (10*16) + 8;
+gO.y = (8*16);
+gO.width = 16;
+gO.height = 16;
+gO.isFlame= true;
+gameObjectsWoodSword.push(gO);
+
+gO = new GameObject()
+gO.x = (7*16) + 8;
+gO.y = (8*16);
+gO.width = 16;
+gO.height = 16;
+gO.isOldMan= true;
+gameObjectsWoodSword.push(gO);
+
+gO = new GameObject();
+gO.isText = true;
+gO.line1Full = "IT'S DANGEROUS TO GO";
+gO.line2Full = "ALONE! TAKE THIS.";
+gO.line1X = 3 * 16;
+gO.line1Y = 7 * 16;
+gO.line2X = 4 * 16;
+gO.line2Y = (8 * 16) - 6;
+gameObjectsWoodSword.push(gO);
 ///////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////
@@ -1050,6 +1099,53 @@ function drawGameObjects()
 {
 	for(let i = 0; i < gameObjects.length; i++)
 	{
+		if(gameObjects[i].isText)
+		{
+			gameObjects[i].counter+=1;
+			if(gameObjects[i].counter%5==0)
+			{
+				if(gameObjects[i].line1Full.length != gameObjects[i].line1Current.length)
+				{
+					gameObjects[i].line1Current = gameObjects[i].line1Full.substring(0, gameObjects[i].line1Current.length + 1);
+				}
+				else if(gameObjects[i].line2Full.length != gameObjects[i].line2Current.length)
+				{
+					gameObjects[i].line2Current = gameObjects[i].line2Full.substring(0, gameObjects[i].line2Current.length + 1);
+				}
+			}
+			
+			ctx.fillStyle = "white";
+			ctx.font = "11px Arial";
+			ctx.fillText(gameObjects[i].line1Current, gameObjects[i].line1X, gameObjects[i].line1Y);
+			ctx.fillText(gameObjects[i].line2Current, gameObjects[i].line2X, gameObjects[i].line2Y);
+		}
+		if(gameObjects[i].isFlame)
+		{
+			gameObjects[i].counter+=1;
+			if(gameObjects[i].counter%5==0)
+			{
+				gameObjects[i].rupeeImage+=1;
+			}
+			if(gameObjects[i].rupeeImage > 1)
+			{
+				gameObjects[i].rupeeImage = 0;
+			}
+			if(gameObjects[i].rupeeImage == 0)
+			{
+				ctx.drawImage(link1, 244, 225, 8, 16, 
+						gameObjects[i].x, gameObjects[i].y, 8, 16);
+			}
+			else
+			{
+				ctx.drawImage(link1, 274, 225, 8, 16, 
+						gameObjects[i].x, gameObjects[i].y, 8, 16);
+			}
+		}
+		if(gameObjects[i].isOldMan)
+		{
+			ctx.drawImage(link1, 274, 225, 8, 16, 
+						gameObjects[i].x, gameObjects[i].y, 8, 16);
+		}
 		if(gameObjects[i].isRupee)
 		{
 			gameObjects[i].counter+=1;
@@ -1427,12 +1523,15 @@ function gameObjectCollision(x, y, objects, isLink, isSword, isBomb,
 							linkY = objects[i].newLinkY;
 							
 						}
-						if(objects[i].isEnemy && !linkNeedsToBounce)
+						if(objects[i].isEnemy && !linkNeedsToBounce && !linkIsInvincible)
 						{
 							//
 							linkNeedsToBounce = true;
 							getBounceLocLink(objects[i].direction);
+							playSound("./sounds/LOZ_link_hurt.wav");
 							currentLinkHearts -= .5;
+							linkIsInvincible = true;
+							invincibleTime = 30;
 							if(currentLinkHearts <= 0)
 							{
 								//link has died
@@ -1750,7 +1849,6 @@ function addMapGameObjects(levelMap, objectArray)
 			}
 		}
 	}
-	console.log("Finished adding mapObjects");
 }
 
 
@@ -1767,6 +1865,11 @@ function draw () {
 	}
 	else
 	{
+		invincibleTime--;
+		if(invincibleTime <= 0)
+		{
+			linkIsInvincible = false;
+		}
 		drawMap(gameMap);
 		drawLink();
 		gameObjectCollision(linkX, linkY, gameObjects, true, false, false, false, false);

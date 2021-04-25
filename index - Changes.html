@@ -12,7 +12,7 @@ let canvas = document.getElementById("myCanvas");
 let ctx = canvas.getContext("2d");
 document.addEventListener("keydown",keyDownHandler, false);
 document.addEventListener("keyup",keyUpHandler,false);
-//document.body.style.zoom = "288%";
+document.body.style.zoom = "288%";
 let rightPressed = false;
 let leftPressed = false;
 let upPressed = false;
@@ -1107,15 +1107,17 @@ function drawGameObjects()
 				if(gameObjects[i].line1Full.length != gameObjects[i].line1Current.length)
 				{
 					gameObjects[i].line1Current = gameObjects[i].line1Full.substring(0, gameObjects[i].line1Current.length + 1);
+					playSound("./sounds/LOZ_text_slow.wav");
 				}
 				else if(gameObjects[i].line2Full.length != gameObjects[i].line2Current.length)
 				{
 					gameObjects[i].line2Current = gameObjects[i].line2Full.substring(0, gameObjects[i].line2Current.length + 1);
+					playSound("./sounds/LOZ_text_slow.wav");
 				}
 			}
 			
 			ctx.fillStyle = "white";
-			ctx.font = "11px Arial";
+			ctx.font = "12px Arial";
 			ctx.fillText(gameObjects[i].line1Current, gameObjects[i].line1X, gameObjects[i].line1Y);
 			ctx.fillText(gameObjects[i].line2Current, gameObjects[i].line2X, gameObjects[i].line2Y);
 		}

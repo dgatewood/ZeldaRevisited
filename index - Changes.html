@@ -24,6 +24,10 @@ let link1 = new Image();
 link1.src = "link.png";
 let enemies = new Image();
 enemies.src = "enemies.png";
+let chars1 = new Image();
+chars1.src = "chars.png";
+let chars2 = new Image();
+chars2.src = "chars2.png";
 let hud = new Image();
 hud.src = "pausescreen.png";
 let backgroundMusic = new Audio();
@@ -36,9 +40,9 @@ let animationSpeed = 10;
 let lastButtonPressed = "up";
 let linkY = 135;
 let linkX = 116;
-let linkHearts = 3;
+let linkHearts = 14;
 let linkNeedsToBounce = false;
-let currentLinkHearts = 3;
+let currentLinkHearts = 14;
 let blocks = [];
 let gameObjects = [];
 let gameAttacks
@@ -462,7 +466,7 @@ let map7_5 = [
 [ 61, 61, 28, 62,  2, 97, 97, 61, 61, 61, 61, 61, 61, 61, 61, 61],
 [ 61, 62,  2,  2,  2, 97, 97,  2,  2,  2,  2,  2,  2,  2,  2,  2],
 [ 61,  2,  2,  2,  2, 97, 97,  2,  7,  2,  2,  2,  7,  2,  2,  2],
-[ 61,  2,  2,  2,  2, 97, 97,  2,  2,  2,  7,  2,  2,  2,  2,  2],
+[ 61,  2,  2,  2,  2,  2,  2,  2,  2,  2,  7,  2,  2,  2,  2,  2],
 [ 61,  2,  2,  7,  2, 97, 97,  2,  7,  2,  2,  2,  7,  2,  2,  2],
 [ 61,  2,  2,  2,  2, 97, 97,  2,  2,  2,  7,  2,  2,  2,  2,  2],
 [ 61,  2,  2,  2,  2, 97, 97,  2,  7,  2,  2,  2,  7,  2,  2,  2],
@@ -1134,19 +1138,19 @@ function drawGameObjects()
 			}
 			if(gameObjects[i].rupeeImage == 0)
 			{
-				ctx.drawImage(link1, 244, 225, 8, 16, 
-						gameObjects[i].x, gameObjects[i].y, 8, 16);
+				ctx.drawImage(chars2, 158, 11, 16, 16, 
+						gameObjects[i].x, gameObjects[i].y, 16, 16);
 			}
 			else
 			{
-				ctx.drawImage(link1, 274, 225, 8, 16, 
-						gameObjects[i].x, gameObjects[i].y, 8, 16);
+				ctx.drawImage(chars1, 52, 11, 16, 16, 
+						gameObjects[i].x, gameObjects[i].y, 16, 16);
 			}
 		}
 		if(gameObjects[i].isOldMan)
 		{
-			ctx.drawImage(link1, 274, 225, 8, 16, 
-						gameObjects[i].x, gameObjects[i].y, 8, 16);
+			ctx.drawImage(chars1, 1, 11, 16, 16, 
+						gameObjects[i].x, gameObjects[i].y, 16, 16);
 		}
 		if(gameObjects[i].isRupee)
 		{
@@ -1763,22 +1767,30 @@ function drawHUD()
 				heartX, heartY, 8, 8);
 		if(i == fullHearts - 1)
 		{
-			halfHeartX = 176 + (i * 8) + 8 - 64;
-			if(i > 7)
+			
+			if(i > 6)
 			{
 				halfHeartY = 40 - 8;
+				halfHeartX = 176 + ((i%7) * 8);
+				
 			}
 			else
 			{
 				halfHeartY = 40;
+				halfHeartX = 176 + (i * 8) + 8;
 			}
 		}	
 	}
 	
-	if(halfHearts > 0)
+	if(halfHearts > 0 && fullHearts >= 1)
 	{
 		ctx.drawImage(hud, 636, 117, 8, 8, 
 				halfHeartX, halfHeartY, 8, 8);
+	}
+	else if(halfHearts > 0 && fullHearts == 0)
+	{
+		ctx.drawImage(hud, 636, 117, 8, 8, 
+				176, 40, 8, 8);
 	}
 	
 	

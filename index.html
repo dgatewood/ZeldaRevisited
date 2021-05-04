@@ -1583,8 +1583,6 @@ function getBounceLocLink(direction)
 		while(!linkCollision(linkX, linkBounceY - 2, gameObjects) && 
 				linkY - 16 !=  linkBounceY)
 		{
-			console.log("Inside while loop 1");
-			console.log("LinBounceY == " + linkBounceY + "   and linkY == " + linkY);
 			linkBounceY -= 2;
 			
 		}
@@ -1594,7 +1592,6 @@ function getBounceLocLink(direction)
 		while(!linkCollision(linkX, linkBounceY + 2, gameObjects) && 
 				linkY + 16 !=  linkBounceY)
 		{
-			console.log("Inside while loop 2");
 			linkBounceY += 2;
 		}
 	}
@@ -1603,7 +1600,6 @@ function getBounceLocLink(direction)
 		while(!linkCollision(linkBounceX - 2, linkY , gameObjects) && 
 				linkX - 16 !=  linkBounceX)
 		{
-			console.log("Inside while loop 3");
 			linkBounceX -= 2;
 		}
 	}
@@ -1612,7 +1608,6 @@ function getBounceLocLink(direction)
 		while(!linkCollision(linkBounceX + 2, linkY , gameObjects) && 
 				linkX + 16 !=  linkBounceX)
 		{
-			console.log("Inside while loop 4");
 			linkBounceX += 2;
 		}
 	}

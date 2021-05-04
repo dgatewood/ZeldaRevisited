@@ -13,6 +13,16 @@ let ctx = canvas.getContext("2d");
 document.addEventListener("keydown",keyDownHandler, false);
 document.addEventListener("keyup",keyUpHandler,false);
 document.body.style.zoom = "288%";
+///potential ugly fix for firefox users....
+//let nativeResWidth = 256;
+//let nativeResHeight = 240;
+//let scaleWidth = 3;
+//let scaleHeight = 3;
+//ctx.canvas.width  = scaleWidth * nativeResWidth;
+//ctx.canvas.height = scaleHeight * nativeResHeight;
+//ctx.scale(scaleWidth,scaleHeight);
+
+
 let rightPressed = false;
 let leftPressed = false;
 let upPressed = false;
@@ -52,12 +62,21 @@ let isAttacking = false;
 let canAttackAgain = true;
 let pathFound = [];
 let hasRun = false;
-let hasSword = true;
+
 let rupeeAmount = 0;
 let linkBounceY = -1;
 let linkBounceX = -1;
 let linkIsInvincible = false;
 let invincibleTime = 0;
+let lastPickUpItem = 0;
+let playPickUpItemAnimation = false;
+let swordEquipped = 0;
+let hasSword = true;
+/// 0 -no sword, 1 - brown, .....
+let inventoryItems = [null, null, null, null, null, null, null, null, null, null, null, null, null];
+let bombNum = 2;
+let keyNum = 5;
+
 
 function playSound(source)
 {
@@ -105,6 +124,8 @@ function GameObject()
 	this.isPickUpItem = false;
 	this.pickUpItemNum = 0;
 	this.isFlame = false;
+	this.isOldWoman = false;
+	this.pickUpItemName = "";
 }
 
 ///Portal variables
@@ -661,6 +682,15 @@ gO.line1Y = 7 * 16;
 gO.line2X = 4 * 16;
 gO.line2Y = (8 * 16) - 6;
 gameObjectsWoodSword.push(gO);
+
+gO = new GameObject()
+gO.x = (8*16)-4;
+gO.y = (9.5*16);
+gO.width = 8;
+gO.height = 16;
+gO.isPickUpItem = true;
+gO.pickUpItemNum = 14;
+gameObjectsWoodSword.push(gO);
 ///////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////
@@ -877,6 +907,69 @@ function drawLink()
 			16, 16, linkX, linkY, 16, 16);
 		}
 		
+	}
+	else if(playPickUpItemAnimation)
+	{
+		animationCounter++;
+		if(animationCounter < 300)
+		{
+			ctx.drawImage(link1, 1, 150, 
+			16, 16, linkX, linkY, 16, 16);	
+		}
+		else
+		{
+			playPickUpItemAnimation = false;
+		}
+
+		switch(lastPickUpItem)
+		{
+			case 0:
+
+				break;
+			case 1:
+
+				break;
+			case 2:
+
+				break;
+			case 3:
+
+				break;
+			case 4:
+
+				break;
+			case 5:
+
+				break;	
+			case 6:
+
+				break;
+			case 7:
+
+				break;
+			case 8:
+
+				break;
+			case 9:
+
+				break;
+			case 10:
+
+				break;
+			case 11:
+
+				break;
+			case 12:
+
+				break;
+			case 13:
+
+				break;
+			case 14:
+				ctx.drawImage(hud, 555, 137, 8, 16, 
+						linkX - 2, linkY - 14, 8, 16);
+				break;
+		}
 	}
 	else
 	{
@@ -1103,6 +1196,100 @@ function drawGameObjects()
 {
 	for(let i = 0; i < gameObjects.length; i++)
 	{
+		if(gameObjects[i].isPickUpItem)
+		{
+			switch(gameObjects[i].pickUpItemNum)
+			{
+				case 0:
+					gO = new GameObject();
+					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+					lastPickUpItem = gameObjects[i].pickUpItemNum;
+					break;
+				case 1:
+					gO = new GameObject();
+					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+					lastPickUpItem = gameObjects[i].pickUpItemNum;
+					break;
+				case 2:
+					gO = new GameObject();
+					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+					lastPickUpItem = gameObjects[i].pickUpItemNum;
+					break;
+				case 3:
+					gO = new GameObject();
+					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+					lastPickUpItem = gameObjects[i].pickUpItemNum;
+					break;
+				case 4:
+					gO = new GameObject();
+					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+					lastPickUpItem = gameObjects[i].pickUpItemNum;
+					break;
+				case 5:
+					gO = new GameObject();
+					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+					lastPickUpItem = gameObjects[i].pickUpItemNum;
+					break;	
+				case 6:
+					gO = new GameObject();
+					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+					lastPickUpItem = gameObjects[i].pickUpItemNum;
+					break;
+				case 7:
+					gO = new GameObject();
+					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+					lastPickUpItem = gameObjects[i].pickUpItemNum;
+					break;
+				case 8:
+					gO = new GameObject();
+					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+					lastPickUpItem = gameObjects[i].pickUpItemNum;
+					break;
+				case 9:
+					gO = new GameObject();
+					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+					lastPickUpItem = gameObjects[i].pickUpItemNum;
+					break;
+				case 10:
+					gO = new GameObject();
+					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+					lastPickUpItem = gameObjects[i].pickUpItemNum;
+					break;
+				case 11:
+					gO = new GameObject();
+					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+					lastPickUpItem = gameObjects[i].pickUpItemNum;
+					break;
+				case 12:
+					gO = new GameObject();
+					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+					lastPickUpItem = gameObjects[i].pickUpItemNum;
+					break;
+				case 13:
+					gO = new GameObject();
+					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+					lastPickUpItem = gameObjects[i].pickUpItemNum;
+					break;
+				case 14:
+					ctx.drawImage(hud, 555, 137, 8, 16, 
+						gameObjects[i].x, gameObjects[i].y, 8, 16);
+					break;
+			}
+		}
 		if(gameObjects[i].isText)
 		{
 			gameObjects[i].counter+=1;
@@ -1110,20 +1297,23 @@ function drawGameObjects()
 			{
 				if(gameObjects[i].line1Full.length != gameObjects[i].line1Current.length)
 				{
-					gameObjects[i].line1Current = gameObjects[i].line1Full.substring(0, gameObjects[i].line1Current.length + 1);
+					gameObjects[i].line1Current = gameObjects[i].line1Full.substring(0, 
+					gameObjects[i].line1Current.length + 1);
 					playSound("./sounds/LOZ_text_slow.wav");
 				}
 				else if(gameObjects[i].line2Full.length != gameObjects[i].line2Current.length)
 				{
-					gameObjects[i].line2Current = gameObjects[i].line2Full.substring(0, gameObjects[i].line2Current.length + 1);
+					gameObjects[i].line2Current = gameObjects[i].line2Full.substring(0, 
+					gameObjects[i].line2Current.length + 1);
 					playSound("./sounds/LOZ_text_slow.wav");
 				}
 			}
-			
 			ctx.fillStyle = "white";
 			ctx.font = "12px Arial";
-			ctx.fillText(gameObjects[i].line1Current, gameObjects[i].line1X, gameObjects[i].line1Y);
-			ctx.fillText(gameObjects[i].line2Current, gameObjects[i].line2X, gameObjects[i].line2Y);
+			ctx.fillText(gameObjects[i].line1Current, 
+			gameObjects[i].line1X, gameObjects[i].line1Y);
+			ctx.fillText(gameObjects[i].line2Current, 
+			gameObjects[i].line2X, gameObjects[i].line2Y);
 		}
 		if(gameObjects[i].isFlame)
 		{
@@ -1150,6 +1340,11 @@ function drawGameObjects()
 		if(gameObjects[i].isOldMan)
 		{
 			ctx.drawImage(chars1, 1, 11, 16, 16, 
+						gameObjects[i].x, gameObjects[i].y, 16, 16);
+		}
+		if(gameObjects[i].isOldWoman)
+		{
+			ctx.drawImage(chars1, 35, 11, 16, 16, 
 						gameObjects[i].x, gameObjects[i].y, 16, 16);
 		}
 		if(gameObjects[i].isRupee)
@@ -1529,6 +1724,122 @@ function gameObjectCollision(x, y, objects, isLink, isSword, isBomb,
 							linkY = objects[i].newLinkY;
 							
 						}
+						if(objects[i].isPickUpItem)
+						{
+							playPickUpItemAnimation = true;
+							///There are a number of pick up items. The first 8 are selctable within
+							/// the inventory screen. The following 6 sit on top of the selectable inventory
+							/// and are automatically equipped and used by link.
+							//0 - boomerang
+							//1 - bomb
+							//2 - bow and arrow
+							//3 - candle
+							//4 - flute
+							//5 - meat
+							//6 - potion(red or blue)
+							//7 - magic rod
+							//8 - raft
+							//9 - book of magic
+							//10 - ring
+							//11 - ladder
+							//12 - key
+							//13 - bracelet
+							//14 - wood sword
+							switch(gameObjects[i].pickUpItemNum)
+							{
+								
+								case 0:
+									
+									break;
+								case 1:
+									gO = new GameObject();
+									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									break;
+								case 2:
+									gO = new GameObject();
+									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									break;
+								case 3:
+									gO = new GameObject();
+									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									break;
+								case 4:
+									gO = new GameObject();
+									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									break;
+								case 5:
+									gO = new GameObject();
+									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									break;	
+								case 6:
+									gO = new GameObject();
+									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									break;
+								case 7:
+									gO = new GameObject();
+									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									break;
+								case 8:
+									gO = new GameObject();
+									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									break;
+								case 9:
+									gO = new GameObject();
+									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									break;
+								case 10:
+									gO = new GameObject();
+									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									break;
+								case 11:
+									gO = new GameObject();
+									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									break;
+								case 12:
+									gO = new GameObject();
+									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									break;
+								case 13:
+									gO = new GameObject();
+									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
+									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
+									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									break;
+								case 14:
+									lastPickUpItem = 14;
+									swordEquipped = 1;
+									playSound("./sounds/item.mp3");
+									
+							}
+							
+							objects.splice(i,1);
+							animationCounter = 0;
+							break;
+						}
 						if(objects[i].isEnemy && !linkNeedsToBounce && !linkIsInvincible)
 						{
 							//
@@ -1568,11 +1879,64 @@ function gameObjectCollision(x, y, objects, isLink, isSword, isBomb,
 			{
 				if(lastButtonPressed == "left")
 				{
-					if (x <= objects[i].x + objects[i].width &&
-					x + swordW>= objects[i].x &&
-					y + 8  <= objects[i].y + objects[i].height &&
-					y + 8 + swordH >= objects[i].y ) 
+					if (x + 2 <= objects[i].x + objects[i].width &&
+					x + 2 + swordW>= objects[i].x &&
+					y + 6  <= objects[i].y + objects[i].height &&
+					y + 6 + swordH >= objects[i].y ) 
 					{
+						//ctx.fillRect(x + 2, (y+6), swordW, swordH);
+						if(objects[i].isEnemy)
+								{
+									//
+									objects[i].health -= 1;
+									objects[i].needsBounce = true;
+									getBounceLoc(objects[i], false,
+											direction);
+									if(objects[i].health == 0)
+									{
+										playSound("./sounds/LOZ_enemy_die.wav");
+									}
+									else
+									{
+										playSound("./sounds/LOZ_enemy_hit.wav");
+									}
+								}
+					}
+				}
+				else if(lastButtonPressed == "right")
+				{
+					if (x - 2<= objects[i].x + objects[i].width &&
+					x - 2 + swordW>= objects[i].x &&
+					y + 6  <= objects[i].y + objects[i].height &&
+					y + 6 + swordH >= objects[i].y ) 
+					{
+						//ctx.fillRect(x - 2, (y+6), swordW, swordH);
+						if(objects[i].isEnemy)
+								{
+									//
+									objects[i].health -= 1;
+									objects[i].needsBounce = true;
+									getBounceLoc(objects[i], false,
+											direction);
+									if(objects[i].health == 0)
+									{
+										playSound("./sounds/LOZ_enemy_die.wav");
+									}
+									else
+									{
+										playSound("./sounds/LOZ_enemy_hit.wav");
+									}
+								}
+					}
+				}
+				else if(lastButtonPressed == "up")
+				{
+					if (x - 2 <= objects[i].x + objects[i].width &&
+					x - 2  + swordW>= objects[i].x &&
+					y   <= objects[i].y + objects[i].height &&
+					y  + swordH >= objects[i].y ) 
+					{
+						//ctx.fillRect(x - 2, y, swordW, swordH);
 						if(objects[i].isEnemy)
 								{
 									//
@@ -1598,6 +1962,7 @@ function gameObjectCollision(x, y, objects, isLink, isSword, isBomb,
 					y  <= objects[i].y + objects[i].height &&
 					y + swordH >= objects[i].y ) 
 					{
+						//ctx.fillRect(x, y, swordW, swordH);
 						if(objects[i].isEnemy)
 								{
 									//
@@ -1823,6 +2188,32 @@ function drawHUD()
 		ctx.drawImage(hud, 528 + (8*thirdNum) + (1*thirdNum), 117, 8, 8, 
 				96 , 16, 8, 8);
 	}
+	
+	//draw bomb and key nums
+	///key num
+	ctx.drawImage(hud, 519, 117, 8, 8, 
+				96, 32, 8, 8);
+	ctx.drawImage(hud, 528 + (8*keyNum) + (1*keyNum), 117, 8, 8, 
+				96 + 8, 32, 8, 8);
+	///bomb num
+	ctx.drawImage(hud, 519, 117, 8, 8, 
+				96, 41, 8, 8);
+	ctx.drawImage(hud, 528 + (8*bombNum) + (1*bombNum), 117, 8, 8, 
+				96 + 8, 41, 8, 8);
+	
+	///Sword and B button items
+	ctx.fillStyle = "black";
+	ctx.fillRect(128, 24, 8, 16);
+	ctx.fillRect(152, 24, 8, 16);
+	if(swordEquipped == 1)
+	{
+		ctx.drawImage(hud, 555, 137, 8, 16, 
+				152 , 24, 8, 16);
+	}
+	
+	///Fill map location in with gray
+	ctx.fillStyle = "gray";
+	ctx.fillRect(16, 8, 64, 48);
 }
 
 function drawGameStart()

@@ -7,6 +7,7 @@
 </head>
 <body>
 <canvas id= "myCanvas" width="256" height="240"></canvas>
+<script src="mapsFileEdited.js"></script>
 <script type="text/javascript">
 let canvas = document.getElementById("myCanvas");
 let ctx = canvas.getContext("2d");
@@ -55,9 +56,8 @@ let linkNeedsToBounce = false;
 let currentLinkHearts = 14;
 let blocks = [];
 let gameObjects = [];
-let gameAttacks
 let gameMap = [];
-let maps = [];
+//let maps = [];
 let isAttacking = false;
 let canAttackAgain = true;
 let pathFound = [];
@@ -78,6 +78,11 @@ let bombNum = 2;
 let keyNum = 5;
 
 
+gameObjects = maps[50].gameobjects;
+gameMap = maps[50].map;
+let currentMap = 50;
+addMapGameObjects(gameMap, gameObjects);
+
 function playSound(source)
 {
 	let sound = new Audio();
@@ -85,697 +90,8 @@ function playSound(source)
 	sound.play();
 }
 
-function GameObject()
-{
-	this.x = 0;
-	this.y = 0;
-	this.width = 0;
-	this.height = 0;
-	this.newMap = 0;
-	this.newLinkX = -1;
-	this.newLinkY = -1;
-	this.isPortal = false;
-	this.isEnemy = false;
-	this.enemyType = 0;
-	this.nextX = 0;
-	this.nextY = 0;
-	this.isAttacking = false;
-	this.health = 0;
-	this.direction = "up";
-	this.enemyPath = [];
-	this.counter = 0;
-	this.frame = 0;
-	this.needsBounce = false;
-	this.bounceX = 0;
-	this.bounceY = 0;
-	this.isRupee = false;
-	this.rupeeValue = 1;
-	this.rupeeImage = 0;
-	this.isText = false;
-	this.line1Full = "";
-	this.line2Full = "";
-	this.line1Current = "";
-	this.line2Current = "";
-	this.line1X = 0;
-	this.line1Y = 0;
-	this.line2X = 0;
-	this.line2Y = 0;
-	this.isOldMan = false;
-	this.isPickUpItem = false;
-	this.pickUpItemNum = 0;
-	this.isFlame = false;
-	this.isOldWoman = false;
-	this.pickUpItemName = "";
-}
-
-///Portal variables
-let gO = new GameObject()
-gO.x = 72;
-gO.y = 72;
-gO.width = 8;
-gO.height = 16;
-gO.newMap = 1;
-gO.newLinkX = 120;
-gO.newLinkY = 220;
-gO.isPortal = true;
-
-let gameObjects7_7 = [];
-gameObjects7_7.push(gO);
-
-gO = new GameObject()
-gO.x = 160;
-gO.y = 184;
-gO.nextX = 160;
-gO.nextY = 184;
-////row 10 col 13
-gO.width = 16;
-gO.height = 16;
-gO.isEnemy = true;
-gO.enemyType = 1;
-gO.isAttacking = false;
-gO.health = 1;
-gO.direction = "up";
-gameObjects7_7.push(gO);
-
-gO = new GameObject()
-gO.x = -15;
-gO.y = 128;
-gO.width = 16;
-gO.height = 16;
-gO.newMap = 2;
-gO.newLinkX = 236;
-gO.newLinkY = 140;
-gO.isPortal = true;
-gameObjects7_7.push(gO);
-
-gO = new GameObject()
-gO.x = 112;
-gO.y = 48;
-gO.width = 16;
-gO.height = 16;
-gO.newMap = 4;
-gO.newLinkX = 112;
-gO.newLinkY = 223;
-gO.isPortal = true;
-gameObjects7_7.push(gO);
-
-gO = new GameObject()
-gO.x = 128;
-gO.y = 48;
-gO.width = 16;
-gO.height = 16;
-gO.newMap = 4;
-gO.newLinkX = 128;
-gO.newLinkY = 223;
-gO.isPortal = true;
-gameObjects7_7.push(gO);
-
-function MapBundle(m, o)
-{
-	this.map = m;
-	this.gameobjects = o;
-}
 
 
-<!-- /////////////////////////////////////////////////////// -->
-<!-- let map0_6 = [ -->
-<!-- [ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22], -->
-<!-- [ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22], -->
-<!-- [ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22], -->
-<!-- [ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22], -->
-<!-- [ 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61,  2,  2, 61, 61], -->
-<!-- [ 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61,  2,  2, 61, 61], -->
-<!-- [  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2, 61, 61], -->
-<!-- [  2,  2,  2,  2,  2,  2,  2,  2,  7,  2,  2,  2,  2,  2, 60, 61], -->
-<!-- [  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  7,  2,  2,  2,  2, 60], -->
-<!-- [  2,  2,  7,  2,  2,  7,  2,  2,  7,  2,  2,  2,  2,  2,  2,  2], -->
-<!-- [  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  7,  2,  2,  2,  2, 42], -->
-<!-- [  2,  2,  2,  2,  2,  2,  2,  2,  7,  2,  2,  2,  2,  2, 42, 61], -->
-<!-- [  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2, 61, 61], -->
-<!-- [ 43, 43, 43, 43, 43, 43, 43, 43, 43, 43, 43, 43, 43, 43, 61, 61], -->
-<!-- [ 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61]]; -->
-
-<!-- let gameObjects7_6 = []; -->
-<!-- gO = new GameObject() -->
-<!-- gO.x = 256; -->
-<!-- gO.y = 144; -->
-<!-- gO.width = 16; -->
-<!-- gO.height = 16; -->
-<!-- gO.newMap = 0; -->
-<!-- gO.newLinkX = 1; -->
-<!-- gO.newLinkY = 140; -->
-<!-- gO.isPortal = true; -->
-<!-- gameObjects7_6.push(gO); -->
-
-<!-- gO = new GameObject() -->
-<!-- gO.x = -16; -->
-<!-- gO.y = 96; -->
-<!-- gO.width = 16; -->
-<!-- gO.height = 16; -->
-<!-- gO.newMap = 3; -->
-<!-- gO.newLinkX = 239; -->
-<!-- gO.newLinkY = 96; -->
-<!-- gO.isPortal = true; -->
-<!-- gameObjects7_6.push(gO); -->
-
-<!-- gO = new GameObject() -->
-<!-- gO.x = -16; -->
-<!-- gO.y = 112; -->
-<!-- gO.width = 16; -->
-<!-- gO.height = 16; -->
-<!-- gO.newMap = 3; -->
-<!-- gO.newLinkX = 239; -->
-<!-- gO.newLinkY = 112; -->
-<!-- gO.isPortal = true; -->
-<!-- gameObjects7_6.push(gO); -->
-
-<!-- gO = new GameObject() -->
-<!-- gO.x = -16; -->
-<!-- gO.y = 128; -->
-<!-- gO.width = 16; -->
-<!-- gO.height = 16; -->
-<!-- gO.newMap = 3; -->
-<!-- gO.newLinkX = 239; -->
-<!-- gO.newLinkY = 128; -->
-<!-- gO.isPortal = true; -->
-<!-- gameObjects7_6.push(gO); -->
-
-<!-- gO = new GameObject() -->
-<!-- gO.x = -16; -->
-<!-- gO.y = 144; -->
-<!-- gO.width = 16; -->
-<!-- gO.height = 16; -->
-<!-- gO.newMap = 3; -->
-<!-- gO.newLinkX = 239; -->
-<!-- gO.newLinkY = 144; -->
-<!-- gO.isPortal = true; -->
-<!-- gameObjects7_6.push(gO); -->
-
-<!-- gO = new GameObject() -->
-<!-- gO.x = -16; -->
-<!-- gO.y = 160; -->
-<!-- gO.width = 16; -->
-<!-- gO.height = 16; -->
-<!-- gO.newMap = 3; -->
-<!-- gO.newLinkX = 239; -->
-<!-- gO.newLinkY = 160; -->
-<!-- gO.isPortal = true; -->
-<!-- gameObjects7_6.push(gO); -->
-
-<!-- gO = new GameObject() -->
-<!-- gO.x = -16; -->
-<!-- gO.y = 176; -->
-<!-- gO.width = 16; -->
-<!-- gO.height = 16; -->
-<!-- gO.newMap = 3; -->
-<!-- gO.newLinkX = 239; -->
-<!-- gO.newLinkY = 176; -->
-<!-- gO.isPortal = true; -->
-<!-- gameObjects7_6.push(gO); -->
-
-<!-- gO = new GameObject() -->
-<!-- gO.x = -16; -->
-<!-- gO.y = 192; -->
-<!-- gO.width = 16; -->
-<!-- gO.height = 16; -->
-<!-- gO.newMap = 3; -->
-<!-- gO.newLinkX = 239; -->
-<!-- gO.newLinkY = 190; -->
-<!-- gO.isPortal = true; -->
-<!-- gameObjects7_6.push(gO); -->
-<!-- /////////////////////////////////////////////////////////////////// -->
-
-
-
-let map7_7 = [
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 61, 61, 61, 61, 61, 61, 61,  2,  2, 61, 61, 61, 61, 61, 61, 61],
-[ 61, 61, 61, 61, 28, 61, 62,  2,  2, 61, 61, 61, 61, 61, 61, 61],
-[ 61, 61, 61, 62,  2,  2,  2,  2,  2, 61, 61, 61, 61, 61, 61, 61],
-[ 61, 61, 62,  2,  2,  2,  2,  2,  2, 61, 61, 61, 61, 61, 61, 61],
-[ 61, 62,  2,  2,  2,  2,  2,  2,  2, 60, 61, 61, 61, 61, 61, 61],
-[  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2],
-[ 43, 44,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2, 43, 43],
-[ 61, 61,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2, 61, 61],
-[ 61, 61,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2, 61, 61],
-[ 61, 61, 43, 43, 43, 43, 43, 43, 43, 43, 43, 43, 43, 43, 61, 61],
-[ 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61]];
-///////////////////////////////////////////////////////
-let map7_6 = [
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61,  2,  2, 61, 61],
-[ 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61,  2,  2, 61, 61],
-[  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2, 61, 61],
-[  2,  2,  2,  2,  2,  2,  2,  2,  7,  2,  2,  2,  2,  2, 60, 61],
-[  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  7,  2,  2,  2,  2, 60],
-[  2,  2,  7,  2,  2,  7,  2,  2,  7,  2,  2,  2,  2,  2,  2,  2],
-[  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  7,  2,  2,  2,  2, 42],
-[  2,  2,  2,  2,  2,  2,  2,  2,  7,  2,  2,  2,  2,  2, 42, 61],
-[  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2, 61, 61],
-[ 43, 43, 43, 43, 43, 43, 43, 43, 43, 43, 43, 43, 43, 43, 61, 61],
-[ 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61]];
-
-let gameObjects7_6 = [];
-gO = new GameObject()
-gO.x = 256;
-gO.y = 144;
-gO.width = 16;
-gO.height = 16;
-gO.newMap = 0;
-gO.newLinkX = 1;
-gO.newLinkY = 140;
-gO.isPortal = true;
-gameObjects7_6.push(gO);
-
-addMapGameObjects(map7_6, gameObjects7_6);
-
-gO = new GameObject()
-gO.x = 160;
-gO.y = 184;
-gO.nextX = 160;
-gO.nextY = 184;
-////row 10 col 13
-gO.width = 16;
-gO.height = 16;
-gO.isEnemy = true;
-gO.enemyType = 1;
-gO.isAttacking = false;
-gO.health = 1;
-gO.direction = "up";
-gameObjects7_6.push(gO);
-
-gO = new GameObject()
-gO.x = 128;
-gO.y = 128;
-gO.nextX = 128;
-gO.nextY = 128;
-////row 10 col 13
-gO.width = 16;
-gO.height = 16;
-gO.isEnemy = true;
-gO.enemyType = 1;
-gO.isAttacking = false;
-gO.health = 1;
-gO.direction = "up";
-gameObjects7_6.push(gO);
-
-gO = new GameObject()
-gO.x = 112;
-gO.y = 112;
-gO.nextX = 112;
-gO.nextY = 112;
-////row 10 col 13
-gO.width = 16;
-gO.height = 16;
-gO.isEnemy = true;
-gO.enemyType = 1;
-gO.isAttacking = false;
-gO.health = 1;
-gO.direction = "up";
-gameObjects7_6.push(gO);
-
-gO = new GameObject()
-gO.x = -16;
-gO.y = 96;
-gO.width = 16;
-gO.height = 16;
-gO.newMap = 3;
-gO.newLinkX = 239;
-gO.newLinkY = 96;
-gO.isPortal = true;
-gameObjects7_6.push(gO);
-
-gO = new GameObject()
-gO.x = -16;
-gO.y = 112;
-gO.width = 16;
-gO.height = 16;
-gO.newMap = 3;
-gO.newLinkX = 239;
-gO.newLinkY = 112;
-gO.isPortal = true;
-gameObjects7_6.push(gO);
-
-gO = new GameObject()
-gO.x = -16;
-gO.y = 128;
-gO.width = 16;
-gO.height = 16;
-gO.newMap = 3;
-gO.newLinkX = 239;
-gO.newLinkY = 128;
-gO.isPortal = true;
-gameObjects7_6.push(gO);
-
-gO = new GameObject()
-gO.x = -16;
-gO.y = 144;
-gO.width = 16;
-gO.height = 16;
-gO.newMap = 3;
-gO.newLinkX = 239;
-gO.newLinkY = 144;
-gO.isPortal = true;
-gameObjects7_6.push(gO);
-
-gO = new GameObject()
-gO.x = -16;
-gO.y = 160;
-gO.width = 16;
-gO.height = 16;
-gO.newMap = 3;
-gO.newLinkX = 239;
-gO.newLinkY = 160;
-gO.isPortal = true;
-gameObjects7_6.push(gO);
-
-gO = new GameObject()
-gO.x = -16;
-gO.y = 176;
-gO.width = 16;
-gO.height = 16;
-gO.newMap = 3;
-gO.newLinkX = 239;
-gO.newLinkY = 176;
-gO.isPortal = true;
-gameObjects7_6.push(gO);
-
-gO = new GameObject()
-gO.x = -16;
-gO.y = 192;
-gO.width = 16;
-gO.height = 16;
-gO.newMap = 3;
-gO.newLinkX = 239;
-gO.newLinkY = 190;
-gO.isPortal = true;
-gameObjects7_6.push(gO);
-///////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////
-let map7_5 = [
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 61, 61, 61, 61,  2, 97, 97, 61, 61, 61, 61, 61, 61, 61, 61, 61],
-[ 61, 61, 28, 62,  2, 97, 97, 61, 61, 61, 61, 61, 61, 61, 61, 61],
-[ 61, 62,  2,  2,  2, 97, 97,  2,  2,  2,  2,  2,  2,  2,  2,  2],
-[ 61,  2,  2,  2,  2, 97, 97,  2,  7,  2,  2,  2,  7,  2,  2,  2],
-[ 61,  2,  2,  2,  2,  2,  2,  2,  2,  2,  7,  2,  2,  2,  2,  2],
-[ 61,  2,  2,  7,  2, 97, 97,  2,  7,  2,  2,  2,  7,  2,  2,  2],
-[ 61,  2,  2,  2,  2, 97, 97,  2,  2,  2,  7,  2,  2,  2,  2,  2],
-[ 61,  2,  2,  2,  2, 97, 97,  2,  7,  2,  2,  2,  7,  2,  2,  2],
-[ 61,  2,  2,  2,  2, 97, 97,  2,  2,  2,  2,  2,  2,  2,  2,  2],
-[ 61, 43, 43, 43, 43, 97, 97, 43, 43, 43, 43, 43, 43, 43, 43, 43],
-[ 61, 61, 61, 61, 61, 97, 97, 61, 61, 61, 61, 61, 61, 61, 61, 61]];
-
-let gameObjects7_5 = [];
-gO = new GameObject()
-gO.x = 256;
-gO.y = 96;
-gO.width = 16;
-gO.height = 16;
-gO.newMap = 2;
-gO.newLinkX = 1;
-gO.newLinkY = 96;
-gO.isPortal = true;
-gameObjects7_5.push(gO);
-
-addMapGameObjects(map7_5, gameObjects7_5);
-
-gO = new GameObject()
-gO.x = 256;
-gO.y = 112;
-gO.width = 16;
-gO.height = 16;
-gO.newMap = 2;
-gO.newLinkX = 1;
-gO.newLinkY = 112;
-gO.isPortal = true;
-gameObjects7_5.push(gO);
-
-gO = new GameObject()
-gO.x = 160;
-gO.y = 184;
-gO.nextX = 160;
-gO.nextY = 184;
-////row 10 col 13
-gO.width = 16;
-gO.height = 16;
-gO.isEnemy = true;
-gO.enemyType = 1;
-gO.isAttacking = false;
-gO.health = 1;
-gO.direction = "up";
-gameObjects7_5.push(gO);
-
-gO = new GameObject()
-gO.x = 32;
-gO.y = 96;
-gO.nextX = 32;
-gO.nextY = 96;
-////row 10 col 13
-gO.width = 16;
-gO.height = 16;
-gO.isEnemy = true;
-gO.enemyType = 1;
-gO.isAttacking = false;
-gO.health = 1;
-gO.direction = "up";
-gameObjects7_5.push(gO);
-
-gO = new GameObject()
-gO.x = 256;
-gO.y = 128;
-gO.width = 16;
-gO.height = 16;
-gO.newMap = 2;
-gO.newLinkX = 1;
-gO.newLinkY = 128;
-gO.isPortal = true;
-gameObjects7_5.push(gO);
-
-gO = new GameObject()
-gO.x = 256;
-gO.y = 144;
-gO.width = 16;
-gO.height = 16;
-gO.newMap = 2;
-gO.newLinkX = 1;
-gO.newLinkY = 144;
-gO.isPortal = true;
-gameObjects7_5.push(gO);
-
-gO = new GameObject()
-gO.x = 256;
-gO.y = 160;
-gO.width = 16;
-gO.height = 16;
-gO.newMap = 2;
-gO.newLinkX = 1;
-gO.newLinkY = 160;
-gO.isPortal = true;
-gameObjects7_5.push(gO);
-
-gO = new GameObject()
-gO.x = 256;
-gO.y = 176;
-gO.width = 16;
-gO.height = 16;
-gO.newMap = 2;
-gO.newLinkX = 1;
-gO.newLinkY = 176;
-gO.isPortal = true;
-gameObjects7_5.push(gO);
-
-gO = new GameObject()
-gO.x = 256;
-gO.y = 192;
-gO.width = 16;
-gO.height = 16;
-gO.newMap = 2;
-gO.newLinkX = 1;
-gO.newLinkY = 190;
-gO.isPortal = true;
-gameObjects7_5.push(gO);
-///////////////////////////////////////////////////////////////////
-
-
-///////////////////////////////////////////////////////////////////
-let mapWoodSword = [
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55],
-[ 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55],
-[ 55, 55, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 55, 55],
-[ 55, 55, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 55, 55],
-[ 55, 55, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 55, 55],
-[ 55, 55, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 55, 55],
-[ 55, 55, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 55, 55],
-[ 55, 55, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 55, 55],
-[ 55, 55, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 55, 55],
-[ 55, 55, 37, 37, 37, 37, 37, 28, 28, 37, 37, 37, 37, 37, 55, 55],
-[ 55, 55, 55, 55, 55, 55, 55, 28, 28, 55, 55, 55, 55, 55, 55, 55]];
-
-let gameObjectsWoodSword = [];
-///Portal variables
-gO = new GameObject()
-gO.x = 112;
-gO.y = 240;
-gO.width = 16;
-gO.height = 16;
-gO.newMap = 0;
-gO.newLinkX = 68;
-gO.newLinkY = 96;
-gO.isPortal = true;
-gameObjectsWoodSword.push(gO);
-
-gO = new GameObject()
-gO.x = 128;
-gO.y = 240;
-gO.width = 16;
-gO.height = 16;
-gO.newMap = 0;
-gO.newLinkX = 68;
-gO.newLinkY = 96;
-gO.isPortal = true;
-gameObjectsWoodSword.push(gO);
-
-gO = new GameObject()
-gO.x = (4*16) + 8;
-gO.y = (8*16);
-gO.width = 16;
-gO.height = 16;
-gO.isFlame= true;
-gameObjectsWoodSword.push(gO);
-
-gO = new GameObject()
-gO.x = (10*16) + 8;
-gO.y = (8*16);
-gO.width = 16;
-gO.height = 16;
-gO.isFlame= true;
-gameObjectsWoodSword.push(gO);
-
-gO = new GameObject()
-gO.x = (7*16) + 8;
-gO.y = (8*16);
-gO.width = 16;
-gO.height = 16;
-gO.isOldMan= true;
-gameObjectsWoodSword.push(gO);
-
-gO = new GameObject();
-gO.isText = true;
-gO.line1Full = "IT'S DANGEROUS TO GO";
-gO.line2Full = "ALONE! TAKE THIS.";
-gO.line1X = 3 * 16;
-gO.line1Y = 7 * 16;
-gO.line2X = 4 * 16;
-gO.line2Y = (8 * 16) - 6;
-gameObjectsWoodSword.push(gO);
-
-gO = new GameObject()
-gO.x = (8*16)-4;
-gO.y = (9.5*16);
-gO.width = 8;
-gO.height = 16;
-gO.isPickUpItem = true;
-gO.pickUpItemNum = 14;
-gameObjectsWoodSword.push(gO);
-///////////////////////////////////////////////////////////////////
-
-///////////////////////////////////////////////////////////////////
-let map131 = [
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 55, 55, 55, 55, 55,  2,  2,  2,  2, 90, 91, 91, 91, 91, 91, 91],
-[ 55, 55, 55, 55, 55,  2,  2,  2,  2, 90, 91, 91, 91, 91, 91, 91],
-[ 55, 55, 55, 55, 55,  2,  2,  2,  2, 90, 91, 91, 91, 91, 91, 91],
-[ 56, 54, 55, 55, 56,  2,  2,  2,  2, 90, 91, 91, 91, 91, 91, 91],
-[  2,  2,  2,  2,  2,  2,  2,  2,  2, 90, 91, 91, 91, 91, 91, 91],
-[ 73, 73, 73, 73, 73, 73, 73, 73, 73,131, 91, 91, 91, 91, 91, 91],
-[ 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91],
-[ 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91],
-[ 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91],
-[ 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91],
-[ 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91]];
-
-let gameObjects131 = [];
-///Portal variables
-gO = new GameObject()
-gO.x = 112;
-gO.y = 240;
-gO.width = 16;
-gO.height = 16;
-gO.newMap = 0;
-gO.newLinkX = 68;
-gO.newLinkY = 96;
-gO.isPortal = true;
-gameObjects131.push(gO);
-
-gO = new GameObject()
-gO.x = 128;
-gO.y = 240;
-gO.width = 16;
-gO.height = 16;
-gO.newMap = 0;
-gO.newLinkX = 68;
-gO.newLinkY = 96;
-gO.isPortal = true;
-gameObjects131.push(gO);
-///////////////////////////////////////////////////////////////////
-let map107 = [
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
-[ 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61],
-[ 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61],
-[ 61, 62,  2,  2,  2,  2,  2,  2,  2, 60, 62,  2,  2,  2, 60, 61],
-[ 62,  2,  2,  7,  2,  7,  2,  2,  2,  2,  2,  2,  7,  2,  2, 60],
-[  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2],
-[  2,  2,  2,  7,  2,  7,  2,  2,  2,  2,  2,  2,  7,  2,  2,  2],
-[  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2],
-[ 44,  2,  2,  7,  2,  7,  2,  2,  2,  2,  2,  2,  7,  2,  2, 42],
-[ 61, 44,  2,  2,  2,  2,  2,  2,  2, 42, 44,  2,  2,  2, 42, 61],
-[ 61, 61, 43, 43, 43, 43, 43,  2,  2, 61, 61, 43, 43, 43, 61, 61], 
-[ 61, 61, 61, 61, 61, 61, 61,  2,  2, 61, 61, 61, 61, 61, 61, 61]];
-let gameObjects107 = [];
-
-gO = new GameObject();
-gO.x = 112;
-gO.y = 224;
-gO.width = 16;
-gO.height = 16;
-gO.newMap = 134;
-gO.newLinkX = 112;
-gO.newLinkY = 65;
-gO.isPortal = true;
-gameObjects107.push(gO);
-
-
-
-
-
-maps.push(new MapBundle(map7_7, gameObjects7_7));
-maps.push(new MapBundle(mapWoodSword, gameObjectsWoodSword));
-maps.push(new MapBundle(map7_6, gameObjects7_6));
-maps.push(new MapBundle(map7_5, gameObjects7_5));
-maps.push(new MapBundle(map107, gameObjects107));
-
-gameObjects = maps[3].gameobjects;
-gameMap = maps[3].map;
 
 function keyDownHandler(e){
     if(e.keyCode == 37)
@@ -1173,7 +489,59 @@ function collision2(x, y, map)
 		for(let j = 0; j < map[i].length; j++)
 			{
 				if(map[i][j] != 2 && map[i][j] != 28 &&
-				map[i][j] != 18)
+				map[i][j] != 18
+				&& map[i][j] != 6
+				&& map[i][j] != 12
+				&& map[i][j] != 14
+				&& map[i][j] != 24
+				&& map[i][j] != 30
+				&& map[i][j] != 34
+				&& map[i][j] != 58
+				&& map[i][j] != 64
+				&& map[i][j] != 70
+				&& map[i][j] != 75
+				&& map[i][j] != 76
+				&& map[i][j] != 77
+				&& map[i][j] != 93
+				&& map[i][j] != 94
+				&& map[i][j] != 95
+				&& map[i][j] != 111
+				&& map[i][j] != 112
+				&& map[i][j] != 113
+				&& map[i][j] != 81
+				&& map[i][j] != 82
+				&& map[i][j] != 83
+				&& map[i][j] != 99
+				&& map[i][j] != 100
+				&& map[i][j] != 101
+				&& map[i][j] != 117
+				&& map[i][j] != 118
+				&& map[i][j] != 119
+				&& map[i][j] != 87
+				&& map[i][j] != 88
+				&& map[i][j] != 89
+				&& map[i][j] != 105
+				&& map[i][j] != 106
+				&& map[i][j] != 107
+				&& map[i][j] != 123
+				&& map[i][j] != 124
+				&& map[i][j] != 125
+				&& map[i][j] != 126
+				&& map[i][j] != 127
+				&& map[i][j] != 128
+				&& map[i][j] != 129
+				&& map[i][j] != 131
+				&& map[i][j] != 132
+				&& map[i][j] != 133
+				&& map[i][j] != 134
+				&& map[i][j] != 135
+				&& map[i][j] != 137
+				&& map[i][j] != 138
+				&& map[i][j] != 139
+				&& map[i][j] != 140
+				&& map[i][j] != 141
+				&& map[i][j] != 143
+				)
 				{
 					blocks.push(new Point(i, j));
 				}
@@ -1720,8 +1088,23 @@ function gameObjectCollision(x, y, objects, isLink, isSword, isBomb,
 						{
 							gameMap = maps[objects[i].newMap].map;
 							gameObjects = maps[objects[i].newMap].gameobjects;
-							linkX = objects[i].newLinkX;
-							linkY = objects[i].newLinkY;
+							currentMap = objects[i].newMap;
+							addMapGameObjects(gameMap, gameObjects);
+							if(objects[i].shiftsLeftRight)
+							{
+								linkX = objects[i].newLinkX;
+							}
+							else if(objects[i].shiftsUpDown)
+							{
+								linkY = objects[i].newLinkY;
+							}
+							else
+							{
+								linkX = objects[i].newLinkX;
+								linkY = objects[i].newLinkY;
+							}
+							console.log("Switching portals");
+							break;
 							
 						}
 						if(objects[i].isPickUpItem)
@@ -2243,7 +1626,287 @@ function addMapGameObjects(levelMap, objectArray)
 	{
 		for(let j = 0; j < levelMap[0].length; j++)
 		{
-			if(levelMap[i][j] != 2)
+			if(i == 4)
+			{
+				if(levelMap[i][j] == 2 
+				|| levelMap[i][j] == 28 
+				|| levelMap[i][j] == 18
+				|| levelMap[i][j] == 6
+				|| levelMap[i][j] == 12
+				|| levelMap[i][j] == 14
+				|| levelMap[i][j] == 24
+				|| levelMap[i][j] == 30
+				|| levelMap[i][j] == 34
+				|| levelMap[i][j] == 58
+				|| levelMap[i][j] == 64
+				|| levelMap[i][j] == 70
+				|| levelMap[i][j] == 75
+				|| levelMap[i][j] == 76
+				|| levelMap[i][j] == 77
+				|| levelMap[i][j] == 93
+				|| levelMap[i][j] == 94
+				|| levelMap[i][j] == 95
+				|| levelMap[i][j] == 111
+				|| levelMap[i][j] == 112
+				|| levelMap[i][j] == 113
+				|| levelMap[i][j] == 81
+				|| levelMap[i][j] == 82
+				|| levelMap[i][j] == 83
+				|| levelMap[i][j] == 99
+				|| levelMap[i][j] == 100
+				|| levelMap[i][j] == 101
+				|| levelMap[i][j] == 117
+				|| levelMap[i][j] == 118
+				|| levelMap[i][j] == 119
+				|| levelMap[i][j] == 87
+				|| levelMap[i][j] == 88
+				|| levelMap[i][j] == 89
+				|| levelMap[i][j] == 105
+				|| levelMap[i][j] == 106
+				|| levelMap[i][j] == 107
+				|| levelMap[i][j] == 123
+				|| levelMap[i][j] == 124
+				|| levelMap[i][j] == 125
+				|| levelMap[i][j] == 126
+				|| levelMap[i][j] == 127
+				|| levelMap[i][j] == 128
+				|| levelMap[i][j] == 129
+				|| levelMap[i][j] == 131
+				|| levelMap[i][j] == 132
+				|| levelMap[i][j] == 133
+				|| levelMap[i][j] == 134
+				|| levelMap[i][j] == 135
+				|| levelMap[i][j] == 137
+				|| levelMap[i][j] == 138
+				|| levelMap[i][j] == 139
+				|| levelMap[i][j] == 140
+				|| levelMap[i][j] == 141
+				|| levelMap[i][j] == 143)
+				{
+					gO = new GameObject()
+					gO.x = j * 16;
+					gO.y = 3 * 16;
+					gO.width = 16;
+					gO.height = 16;
+					gO.newMap = currentMap - 16;
+					gO.newLinkX = (j * 16) +1; 
+					gO.newLinkY = 223;
+					gO.isPortal = true;
+					gO.shiftsUpDown = true;
+					gameObjects.push(gO);
+				}
+			}
+			else if(i == 14)
+			{
+				if(levelMap[i][j] == 2 
+				|| levelMap[i][j] == 28 
+				|| levelMap[i][j] == 18
+				|| levelMap[i][j] == 6
+				|| levelMap[i][j] == 12
+				|| levelMap[i][j] == 14
+				|| levelMap[i][j] == 24
+				|| levelMap[i][j] == 30
+				|| levelMap[i][j] == 34
+				|| levelMap[i][j] == 58
+				|| levelMap[i][j] == 64
+				|| levelMap[i][j] == 70
+				|| levelMap[i][j] == 75
+				|| levelMap[i][j] == 76
+				|| levelMap[i][j] == 77
+				|| levelMap[i][j] == 93
+				|| levelMap[i][j] == 94
+				|| levelMap[i][j] == 95
+				|| levelMap[i][j] == 111
+				|| levelMap[i][j] == 112
+				|| levelMap[i][j] == 113
+				|| levelMap[i][j] == 81
+				|| levelMap[i][j] == 82
+				|| levelMap[i][j] == 83
+				|| levelMap[i][j] == 99
+				|| levelMap[i][j] == 100
+				|| levelMap[i][j] == 101
+				|| levelMap[i][j] == 117
+				|| levelMap[i][j] == 118
+				|| levelMap[i][j] == 119
+				|| levelMap[i][j] == 87
+				|| levelMap[i][j] == 88
+				|| levelMap[i][j] == 89
+				|| levelMap[i][j] == 105
+				|| levelMap[i][j] == 106
+				|| levelMap[i][j] == 107
+				|| levelMap[i][j] == 123
+				|| levelMap[i][j] == 124
+				|| levelMap[i][j] == 125
+				|| levelMap[i][j] == 126
+				|| levelMap[i][j] == 127
+				|| levelMap[i][j] == 128
+				|| levelMap[i][j] == 129
+				|| levelMap[i][j] == 131
+				|| levelMap[i][j] == 132
+				|| levelMap[i][j] == 133
+				|| levelMap[i][j] == 134
+				|| levelMap[i][j] == 135
+				|| levelMap[i][j] == 137
+				|| levelMap[i][j] == 138
+				|| levelMap[i][j] == 139
+				|| levelMap[i][j] == 140
+				|| levelMap[i][j] == 141
+				|| levelMap[i][j] == 143)
+				{
+					gO = new GameObject()
+					gO.x = j * 16;
+					gO.y = (i + 1) * 16;
+					gO.width = 16;
+					gO.height = 16;
+					gO.newMap = currentMap + 16;
+					gO.newLinkX = (j * 16) + 1;
+					gO.newLinkY = 81;
+					gO.isPortal = true;
+					gO.shiftsUpDown = true;
+					gameObjects.push(gO);
+				}
+			}
+			else if(j == 0)
+			{
+				if(levelMap[i][j] == 2 
+				|| levelMap[i][j] == 28 
+				|| levelMap[i][j] == 18
+				|| levelMap[i][j] == 6
+				|| levelMap[i][j] == 12
+				|| levelMap[i][j] == 14
+				|| levelMap[i][j] == 24
+				|| levelMap[i][j] == 30
+				|| levelMap[i][j] == 34
+				|| levelMap[i][j] == 58
+				|| levelMap[i][j] == 64
+				|| levelMap[i][j] == 70
+				|| levelMap[i][j] == 75
+				|| levelMap[i][j] == 76
+				|| levelMap[i][j] == 77
+				|| levelMap[i][j] == 93
+				|| levelMap[i][j] == 94
+				|| levelMap[i][j] == 95
+				|| levelMap[i][j] == 111
+				|| levelMap[i][j] == 112
+				|| levelMap[i][j] == 113
+				|| levelMap[i][j] == 81
+				|| levelMap[i][j] == 82
+				|| levelMap[i][j] == 83
+				|| levelMap[i][j] == 99
+				|| levelMap[i][j] == 100
+				|| levelMap[i][j] == 101
+				|| levelMap[i][j] == 117
+				|| levelMap[i][j] == 118
+				|| levelMap[i][j] == 119
+				|| levelMap[i][j] == 87
+				|| levelMap[i][j] == 88
+				|| levelMap[i][j] == 89
+				|| levelMap[i][j] == 105
+				|| levelMap[i][j] == 106
+				|| levelMap[i][j] == 107
+				|| levelMap[i][j] == 123
+				|| levelMap[i][j] == 124
+				|| levelMap[i][j] == 125
+				|| levelMap[i][j] == 126
+				|| levelMap[i][j] == 127
+				|| levelMap[i][j] == 128
+				|| levelMap[i][j] == 129
+				|| levelMap[i][j] == 131
+				|| levelMap[i][j] == 132
+				|| levelMap[i][j] == 133
+				|| levelMap[i][j] == 134
+				|| levelMap[i][j] == 135
+				|| levelMap[i][j] == 137
+				|| levelMap[i][j] == 138
+				|| levelMap[i][j] == 139
+				|| levelMap[i][j] == 140
+				|| levelMap[i][j] == 141
+				|| levelMap[i][j] == 143)
+				{
+					gO = new GameObject()
+					gO.x = -16;
+					gO.y = i * 16;
+					gO.width = 16;
+					gO.height = 16;
+					gO.newMap = currentMap - 1;
+					gO.newLinkX = 223;
+					gO.newLinkY = (i * 16) - 1;
+					gO.isPortal = true;
+					gO.shiftsLeftRight = true;
+					gameObjects.push(gO);
+				}
+			}
+			else if(j == 15)
+			{
+				if(levelMap[i][j] == 2 
+				|| levelMap[i][j] == 28 
+				|| levelMap[i][j] == 18
+				|| levelMap[i][j] == 6
+				|| levelMap[i][j] == 12
+				|| levelMap[i][j] == 14
+				|| levelMap[i][j] == 24
+				|| levelMap[i][j] == 30
+				|| levelMap[i][j] == 34
+				|| levelMap[i][j] == 58
+				|| levelMap[i][j] == 64
+				|| levelMap[i][j] == 70
+				|| levelMap[i][j] == 75
+				|| levelMap[i][j] == 76
+				|| levelMap[i][j] == 77
+				|| levelMap[i][j] == 93
+				|| levelMap[i][j] == 94
+				|| levelMap[i][j] == 95
+				|| levelMap[i][j] == 111
+				|| levelMap[i][j] == 112
+				|| levelMap[i][j] == 113
+				|| levelMap[i][j] == 81
+				|| levelMap[i][j] == 82
+				|| levelMap[i][j] == 83
+				|| levelMap[i][j] == 99
+				|| levelMap[i][j] == 100
+				|| levelMap[i][j] == 101
+				|| levelMap[i][j] == 117
+				|| levelMap[i][j] == 118
+				|| levelMap[i][j] == 119
+				|| levelMap[i][j] == 87
+				|| levelMap[i][j] == 88
+				|| levelMap[i][j] == 89
+				|| levelMap[i][j] == 105
+				|| levelMap[i][j] == 106
+				|| levelMap[i][j] == 107
+				|| levelMap[i][j] == 123
+				|| levelMap[i][j] == 124
+				|| levelMap[i][j] == 125
+				|| levelMap[i][j] == 126
+				|| levelMap[i][j] == 127
+				|| levelMap[i][j] == 128
+				|| levelMap[i][j] == 129
+				|| levelMap[i][j] == 131
+				|| levelMap[i][j] == 132
+				|| levelMap[i][j] == 133
+				|| levelMap[i][j] == 134
+				|| levelMap[i][j] == 135
+				|| levelMap[i][j] == 137
+				|| levelMap[i][j] == 138
+				|| levelMap[i][j] == 139
+				|| levelMap[i][j] == 140
+				|| levelMap[i][j] == 141
+				|| levelMap[i][j] == 143)
+				{
+					gO = new GameObject()
+					gO.x = 256;
+					gO.y = i * 16;
+					gO.width = 16;
+					gO.height = 16;
+					gO.newMap = currentMap + 1;
+					gO.newLinkX = 1;
+					gO.newLinkY = (i * 16) - 2;
+					gO.isPortal = true;
+					gO.shiftsLeftRight = true;
+					gameObjects.push(gO);
+				}
+			}
+			if(levelMap[i][j] != 2 && false)
 			{
 				gO = new GameObject()
 				gO.x = j * 16;

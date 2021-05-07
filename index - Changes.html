@@ -78,9 +78,9 @@ let bombNum = 2;
 let keyNum = 5;
 
 
-gameObjects = maps[50].gameobjects;
-gameMap = maps[50].map;
-let currentMap = 50;
+gameObjects = maps[119].gameobjects;
+gameMap = maps[119].map;
+let currentMap = 119;
 addMapGameObjects(gameMap, gameObjects);
 
 function playSound(source)
@@ -550,8 +550,8 @@ function collision2(x, y, map)
 
 	for(let i = 0; i < blocks.length; i++)
 		{
-			if (x <= blocks[i].col*16 + 16 &&
-			   x + 10 >= blocks[i].col*16 &&
+			if (x +4<= blocks[i].col*16 + 16 &&
+			   x + 12 >= blocks[i].col*16 &&
 			   y + 10 <= blocks[i].row*16 + 16 &&
 			   y + 16 >= blocks[i].row*16 ) {
 					return true;
@@ -917,6 +917,27 @@ function drawGameObjects()
 							gameObjects[i].direction = "up";
 						}
 					}
+				}
+			}
+			if(gameObjects[i].enemyType == 2)
+			{
+				gameObjects[i].counter++;
+				if(gameObjects[i].counter < 60)
+				{
+					////fire projectile
+				}
+				else if(gameObjects[i].counter == 60)
+				{
+					////fire projectile
+				}
+				else if(gameObjects[i].counter > 80)
+				{
+					//hide under water
+				}
+				else if(gameObjects[i].counter  >120)
+				{
+					//move coords
+					gameObjects[i].counter = 0;
 				}
 			}
 		}

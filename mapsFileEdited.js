@@ -49,6 +49,9 @@ function GameObject()
 	this.isFlame = false;
 	this.isOldWoman = false;
 	this.pickUpItemName = "";
+	this.speed = 3;
+	this.waterProjectile = false;
+	this.angle = 0;
 }
 
 let gO = new GameObject();
@@ -1922,6 +1925,19 @@ let gameObjects85 = [];
  gO.health = 1; 
  gO.direction = "down"; 
  gameObjects85.push(gO);
+ 
+ gO.x = 5 * 16; 
+ gO.y = 5 * 16; 
+ gO.nextX = 5 * 16; 
+ gO.nextY = 5 * 16;  
+ gO.width = 16; 
+ gO.height = 16; 
+ gO.isEnemy = true; 
+ gO.enemyType = 2; 
+ gO.isAttacking = false; 
+ gO.health = 1; 
+ gO.direction = "down"; 
+ gameObjects85.push(gO);
 maps.push(new MapBundle (map85, gameObjects85));
 
 let map86 = [
@@ -2429,6 +2445,79 @@ let map102 = [
 [ 43, 43, 43, 43, 43, 43, 43, 43, 43, 43, 43, 44,  2,  2, 61, 61],
 [ 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61,  2,  2, 61, 61]];
 let gameObjects102 = [];
+gO = new GameObject()
+gO.x = 7 * 16; 
+gO.y = 4 * 16; 
+gO.width = 8; 
+gO.height = 16;
+gO.newMap = 129; 
+gO.newLinkX = 120;
+gO.newLinkY = 220; 
+gO.isPortal = true;
+gameObjects102.push(gO); 
+
+ gO = new GameObject() 
+ gO.x = 2 * 16; 
+ gO.y = 8 * 16; 
+ gO.nextX = 2 * 16; 
+ gO.nextY = 8 * 16;  
+ gO.width = 16; 
+ gO.height = 16; 
+ gO.isEnemy = true; 
+ gO.enemyType = 1; 
+ gO.isAttacking = false; 
+ gO.health = 1; 
+ gO.direction = "up"; 
+ gO.speed = 2;
+ gameObjects102.push(gO);
+ 
+ gO = new GameObject() 
+gO = new GameObject() 
+ gO.x = 2 * 16; 
+ gO.y = 10 * 16; 
+ gO.nextX = 2 * 16; 
+ gO.nextY = 10 * 16;   
+ gO.width = 16; 
+ gO.height = 16; 
+ gO.isEnemy = true; 
+ gO.enemyType = 1; 
+ gO.isAttacking = false; 
+ gO.health = 1; 
+ gO.direction = "up"; 
+ gO.speed = 2;
+ gameObjects102.push(gO);
+ 
+  gO = new GameObject() 
+gO = new GameObject() 
+ gO.x = 6 * 16; 
+ gO.y =8 * 16; 
+ gO.nextX = 6 * 16; 
+ gO.nextY = 8 * 16;   
+ gO.width = 16; 
+ gO.height = 16; 
+ gO.isEnemy = true; 
+ gO.enemyType = 1; 
+ gO.isAttacking = false; 
+ gO.health = 1; 
+ gO.direction = "up"; 
+ gO.speed = 2;
+ gameObjects102.push(gO);
+ 
+  gO = new GameObject() 
+gO = new GameObject() 
+ gO.x = 6 * 16; 
+ gO.y = 10 * 16; 
+ gO.nextX = 6 * 16; 
+ gO.nextY = 10 * 16;   
+ gO.width = 16; 
+ gO.height = 16; 
+ gO.isEnemy = true; 
+ gO.enemyType = 1; 
+ gO.isAttacking = false; 
+ gO.health = 1; 
+ gO.direction = "up"; 
+ gO.speed = 2;
+ gameObjects102.push(gO);
 maps.push(new MapBundle (map102, gameObjects102));
 ///////////////////////////
 
@@ -2451,6 +2540,64 @@ let map103 = [
 [ 61, 61, 43, 43, 43, 43, 43,  2,  2, 61, 61, 43, 43, 43, 61, 61],
 [ 61, 61, 61, 61, 61, 61, 61,  2,  2, 61, 61, 61, 61, 61, 61, 61]];
 let gameObjects103 = [];
+ gO = new GameObject() 
+ gO.x = 4 * 16; 
+ gO.y = 8 * 16; 
+ gO.nextX = 4 * 16; 
+ gO.nextY = 8 * 16;  
+ gO.width = 16; 
+ gO.height = 16; 
+ gO.isEnemy = true; 
+ gO.enemyType = 1; 
+ gO.isAttacking = false; 
+ gO.health = 1; 
+ gO.direction = "up"; 
+ gameObjects103.push(gO);
+ 
+ gO = new GameObject() 
+gO = new GameObject() 
+ gO.x = 10 * 16; 
+ gO.y = 11 * 16; 
+ gO.nextX = 10 * 16; 
+ gO.nextY = 11 * 16;   
+ gO.width = 16; 
+ gO.height = 16; 
+ gO.isEnemy = true; 
+ gO.enemyType = 1; 
+ gO.isAttacking = false; 
+ gO.health = 1; 
+ gO.direction = "up"; 
+ gameObjects103.push(gO);
+ 
+  gO = new GameObject() 
+gO = new GameObject() 
+ gO.x = 12 * 16; 
+ gO.y = 10 * 16; 
+ gO.nextX = 12 * 16; 
+ gO.nextY = 10 * 16;   
+ gO.width = 16; 
+ gO.height = 16; 
+ gO.isEnemy = true; 
+ gO.enemyType = 1; 
+ gO.isAttacking = false; 
+ gO.health = 1; 
+ gO.direction = "up"; 
+ gameObjects103.push(gO);
+ 
+  gO = new GameObject() 
+gO = new GameObject() 
+ gO.x = 4 * 16; 
+ gO.y = 8 * 16; 
+ gO.nextX = 4 * 16; 
+ gO.nextY = 8 * 16;   
+ gO.width = 16; 
+ gO.height = 16; 
+ gO.isEnemy = true; 
+ gO.enemyType = 1; 
+ gO.isAttacking = false; 
+ gO.health = 1; 
+ gO.direction = "up"; 
+ gameObjects103.push(gO);
 maps.push(new MapBundle (map103, gameObjects103));
 
 ///////////////////////////
@@ -3168,7 +3315,95 @@ maps.push(new MapBundle(map127, gameObjects127));
  /////////////////////////////////////////////////////////////////// -->
 
 ////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////// 
+ let map129 = [ 
+ [ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22], 
+ [ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22], 
+ [ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22], 
+ [ 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22], 
+ [ 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55], 
+ [ 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55], 
+ [ 55, 55, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 55, 55], 
+ [ 55, 55, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 55, 55], 
+ [ 55, 55, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 55, 55], 
+ [ 55, 55, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 55, 55], 
+ [ 55, 55, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 55, 55], 
+ [ 55, 55, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 55, 55], 
+ [ 55, 55, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 55, 55], 
+ [ 55, 55, 37, 37, 37, 37, 37, 28, 28, 37, 37, 37, 37, 37, 55, 55], 
+ [ 55, 55, 55, 55, 55, 55, 55, 28, 28, 55, 55, 55, 55, 55, 55, 55]]; 
 
+ let gameObjects129 = []; 
+ ///Portal variables 
+ gO = new GameObject() 
+ gO.x = 112; 
+ gO.y = 240; 
+ gO.width = 16; 
+ gO.height = 16; 
+ gO.newMap = 102; 
+ gO.newLinkX = 68; 
+ gO.newLinkY = 96; 
+ gO.isPortal = true; 
+ gameObjects129.push(gO); 
+
+ gO = new GameObject() 
+ gO.x = 128; 
+ gO.y = 240; 
+ gO.width = 16; 
+ gO.height = 16; 
+ gO.newMap = 102; 
+ gO.newLinkX = 68; 
+ gO.newLinkY = 96; 
+ gO.isPortal = true; 
+ gameObjects129.push(gO); 
+
+ gO = new GameObject() 
+ gO.x = (4*16) + 8; 
+ gO.y = (8*16); 
+ gO.width = 16; 
+ gO.height = 16; 
+ gO.isFlame= true; 
+ gameObjects129.push(gO); 
+
+ gO = new GameObject() 
+ gO.x = (10*16) + 8; 
+ gO.y = (8*16); 
+ gO.width = 16; 
+ gO.height = 16; 
+ gO.isFlame= true; 
+ gameObjects129.push(gO); 
+
+ gO = new GameObject() 
+ gO.x = (7*16) + 8; 
+ gO.y = (8*16); 
+ gO.width = 16; 
+ gO.height = 16; 
+ gO.isOldMan= true; 
+ gameObjects129.push(gO); 
+
+ gO = new GameObject(); 
+ gO.isText = true; 
+ gO.line1Full = "BUY SOMETHIN' WILL YA!"; 
+ gO.line2Full = ""; 
+ gO.line1X = 3 * 16; 
+ gO.line1Y = 7 * 16; 
+ gO.line2X = 4 * 16; 
+ gO.line2Y = (8 * 16) - 6; 
+ gameObjects129.push(gO); 
+
+ gO = new GameObject() 
+ gO.x = (8*16)-4; 
+ gO.y = (9.5*16); 
+ gO.width = 8; 
+ gO.height = 16; 
+ gO.isPickUpItem = true; 
+ gO.pickUpItemNum = 14; 
+ gameObjects129.push(gO); 
+ 
+ maps.push(new MapBundle(map129, gameObjects129));
+ /////////////////////////////////////////////////////////////////// -->
+
+////////////////////////////////////////////////////////////////////////////
 
 
 

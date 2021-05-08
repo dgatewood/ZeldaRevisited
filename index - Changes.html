@@ -71,7 +71,7 @@ let invincibleTime = 0;
 let lastPickUpItem = 0;
 let playPickUpItemAnimation = false;
 let swordEquipped = 0;
-let hasSword = true;
+let hasSword = false;
 /// 0 -no sword, 1 - brown, .....
 let inventoryItems = [null, null, null, null, null, null, null, null, null, null, null, null, null];
 let bombNum = 2;
@@ -564,6 +564,7 @@ function drawGameObjects()
 {
 	for(let i = 0; i < gameObjects.length; i++)
 	{
+		
 		if(gameObjects[i].isPickUpItem)
 		{
 			switch(gameObjects[i].pickUpItemNum)
@@ -882,7 +883,7 @@ function drawGameObjects()
 					{
 						if(gameObjects[i].nextX > gameObjects[i].x)
 						{
-							if(gameObjects[i].counter%3 == 0)
+							if(gameObjects[i].counter% gameObjects[i].speed == 0)
 							{
 								gameObjects[i].x += 1;
 							}
@@ -890,7 +891,7 @@ function drawGameObjects()
 						}
 						else if(gameObjects[i].nextX < gameObjects[i].x)
 						{
-							if(gameObjects[i].counter%3 == 0)
+							if(gameObjects[i].counter% gameObjects[i].speed == 0)
 							{
 								gameObjects[i].x -= 1;
 							}
@@ -902,7 +903,7 @@ function drawGameObjects()
 					{
 						if(gameObjects[i].nextY > gameObjects[i].y)
 						{
-							if(gameObjects[i].counter%3 == 0)
+							if(gameObjects[i].counter% gameObjects[i].speed == 0)
 							{
 								gameObjects[i].y += 1;
 							}
@@ -910,7 +911,7 @@ function drawGameObjects()
 						}
 						else if(gameObjects[i].nextY < gameObjects[i].y)
 						{
-							if(gameObjects[i].counter%3 == 0)
+							if(gameObjects[i].counter% gameObjects[i].speed == 0)
 							{
 								gameObjects[i].y -= 1;
 							}
@@ -922,25 +923,66 @@ function drawGameObjects()
 			if(gameObjects[i].enemyType == 2)
 			{
 				gameObjects[i].counter++;
-				if(gameObjects[i].counter < 60)
+				if(gameObjects[i].counter < 180)
 				{
-					////fire projectile
+					ctx.drawImage(enemies, 180, 300, 16, 16, 
+						gameObjects[i].x, gameObjects[i].y, 16, 16);
 				}
-				else if(gameObjects[i].counter == 60)
+				else if(gameObjects[i].counter == 180)
 				{
-					////fire projectile
+					////new water projectile
+					go = new GameObject();
+					gO.x = gameObjects[i].x; 
+					gO.y = gameObjects[i].y; 
+					gO.width = 8; 
+					gO.height = 10;
+					gO.waterProjectile = true;
+					let adjustedX = gameObjects[i].x - linkX;
+					let adjustedY = gameObjects[i].y - linkY;
+					let angle = -1 * Math.atan2(adjustedX, adjustedY) - 
+										Math.PI/2;
+					gO.angle = angle;
+					gameObjects.push(gO);
 				}
-				else if(gameObjects[i].counter > 80)
+				else if(gameObjects[i].counter < 360)
 				{
 					//hide under water
 				}
-				else if(gameObjects[i].counter  >120)
+				else if(gameObjects[i].counter > 360)
 				{
 					//move coords
 					gameObjects[i].counter = 0;
 				}
 			}
+			
 		}
+		if(gameObjects[i].waterProjectile)
+			{
+				gameObjects[i].counter+=1;
+				if(gameObjects[i].counter==0)
+				{
+					ctx.drawImage(enemies, 334, 33, 8, 10, 
+							gameObjects[i].x, gameObjects[i].y, 8, 10);
+				}
+				else if(gameObjects[i].counter==1)
+				{
+					ctx.drawImage(enemies, 364, 33, 8, 10, 
+							gameObjects[i].x, gameObjects[i].y, 8, 10);
+				}
+				else
+				{
+					ctx.drawImage(enemies, 394, 33, 8, 10, 
+							gameObjects[i].x, gameObjects[i].y, 8, 10);
+					gameObjects[i].counter = -1;
+				}
+				gameObjects[i].x += Math.cos(gameObjects[i].angle);
+				gameObjects[i].y += Math.sin(gameObjects[i].angle);
+				if(gameObjects[i].x < 0 || gameObjects[i].x > 256 ||
+				gameObjects[i].y < 0 || gameObjects[i].y > 240)
+				{
+					gameObjects.splice(i, 1);
+				}
+			}
 	}
 }
 
@@ -1236,6 +1278,7 @@ function gameObjectCollision(x, y, objects, isLink, isSword, isBomb,
 								case 14:
 									lastPickUpItem = 14;
 									swordEquipped = 1;
+									hasSword = true;
 									playSound("./sounds/item.mp3");
 									
 							}
@@ -1244,11 +1287,11 @@ function gameObjectCollision(x, y, objects, isLink, isSword, isBomb,
 							animationCounter = 0;
 							break;
 						}
-						if(objects[i].isEnemy && !linkNeedsToBounce && !linkIsInvincible)
+						if((objects[i].waterProjectile || objects[i].isEnemy) && !linkNeedsToBounce && !linkIsInvincible)
 						{
 							//
-							linkNeedsToBounce = true;
-							getBounceLocLink(objects[i].direction);
+							//linkNeedsToBounce = true;
+							//getBounceLocLink(objects[i].direction);
 							playSound("./sounds/LOZ_link_hurt.wav");
 							currentLinkHearts -= .5;
 							linkIsInvincible = true;
@@ -1452,44 +1495,44 @@ function getBounceLocLink(direction)
 {
 	linkBounceX = linkX;
 	linkBounceY = linkY;
-	if(direction == "up")
-	{
-		while(!linkCollision(linkX, linkBounceY - 2, gameObjects) && 
-				linkY - 16 !=  linkBounceY)
-		{
-			console.log("Inside while loop 1");
-			console.log("LinBounceY == " + linkBounceY + "   and linkY == " + linkY);
-			linkBounceY -= 2;
+	<!-- if(direction == "up") -->
+	<!-- { -->
+		<!-- while(!linkCollision(linkX, linkBounceY - 2, gameObjects) &&  -->
+				<!-- linkY - 16 !=  linkBounceY) -->
+		<!-- { -->
+			<!-- console.log("Inside while loop 1"); -->
+			<!-- console.log("LinBounceY == " + linkBounceY + "   and linkY == " + linkY); -->
+			<!-- linkBounceY -= 2; -->
 			
-		}
-	}
-	if(direction == "down")
-	{
-		while(!linkCollision(linkX, linkBounceY + 2, gameObjects) && 
-				linkY + 16 !=  linkBounceY)
-		{
-			console.log("Inside while loop 2");
-			linkBounceY += 2;
-		}
-	}
-	if(direction == "left")	
-	{
-		while(!linkCollision(linkBounceX - 2, linkY , gameObjects) && 
-				linkX - 16 !=  linkBounceX)
-		{
-			console.log("Inside while loop 3");
-			linkBounceX -= 2;
-		}
-	}
-	if(direction == "right")
-	{
-		while(!linkCollision(linkBounceX + 2, linkY , gameObjects) && 
-				linkX + 16 !=  linkBounceX)
-		{
-			console.log("Inside while loop 4");
-			linkBounceX += 2;
-		}
-	}
+		<!-- } -->
+	<!-- } -->
+	<!-- if(direction == "down") -->
+	<!-- { -->
+		<!-- while(!linkCollision(linkX, linkBounceY + 2, gameObjects) &&  -->
+				<!-- linkY + 16 !=  linkBounceY) -->
+		<!-- { -->
+			<!-- console.log("Inside while loop 2"); -->
+			<!-- linkBounceY += 2; -->
+		<!-- } -->
+	<!-- } -->
+	<!-- if(direction == "left")	 -->
+	<!-- { -->
+		<!-- while(!linkCollision(linkBounceX - 2, linkY , gameObjects) &&  -->
+				<!-- linkX - 16 !=  linkBounceX) -->
+		<!-- { -->
+			<!-- console.log("Inside while loop 3"); -->
+			<!-- linkBounceX -= 2; -->
+		<!-- } -->
+	<!-- } -->
+	<!-- if(direction == "right") -->
+	<!-- { -->
+		<!-- while(!linkCollision(linkBounceX + 2, linkY , gameObjects) &&  -->
+				<!-- linkX + 16 !=  linkBounceX) -->
+		<!-- { -->
+			<!-- console.log("Inside while loop 4"); -->
+			<!-- linkBounceX += 2; -->
+		<!-- } -->
+	<!-- } -->
 }
 
 function drawHUD()

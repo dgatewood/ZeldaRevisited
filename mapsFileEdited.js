@@ -48,10 +48,12 @@ function GameObject()
 	this.pickUpItemNum = 0;
 	this.isFlame = false;
 	this.isOldWoman = false;
+	this.isSaleRupee = false;
 	this.pickUpItemName = "";
 	this.speed = 3;
 	this.waterProjectile = false;
 	this.angle = 0;
+	this.cost = 0;
 }
 
 let gO = new GameObject();
@@ -3290,6 +3292,7 @@ maps.push(new MapBundle(map127, gameObjects127));
  gO.width = 16; 
  gO.height = 16; 
  gO.isOldMan= true; 
+ gO.isSaleItem = true;
  gameObjectsWoodSword.push(gO); 
 
  gO = new GameObject(); 
@@ -3300,6 +3303,7 @@ maps.push(new MapBundle(map127, gameObjects127));
  gO.line1Y = 7 * 16; 
  gO.line2X = 4 * 16; 
  gO.line2Y = (8 * 16) - 6; 
+ gO.isSaleItem = true;
  gameObjectsWoodSword.push(gO); 
 
  gO = new GameObject() 
@@ -3341,8 +3345,8 @@ maps.push(new MapBundle(map127, gameObjects127));
  gO.width = 16; 
  gO.height = 16; 
  gO.newMap = 102; 
- gO.newLinkX = 68; 
- gO.newLinkY = 96; 
+ gO.newLinkX = 112; 
+ gO.newLinkY = 82; 
  gO.isPortal = true; 
  gameObjects129.push(gO); 
 
@@ -3353,7 +3357,7 @@ maps.push(new MapBundle(map127, gameObjects127));
  gO.height = 16; 
  gO.newMap = 102; 
  gO.newLinkX = 68; 
- gO.newLinkY = 96; 
+ gO.newLinkY = 82; 
  gO.isPortal = true; 
  gameObjects129.push(gO); 
 
@@ -3378,7 +3382,8 @@ maps.push(new MapBundle(map127, gameObjects127));
  gO.y = (8*16); 
  gO.width = 16; 
  gO.height = 16; 
- gO.isOldMan= true; 
+ gO.isMerchant= true; 
+ gO.isSaleItem = true;
  gameObjects129.push(gO); 
 
  gO = new GameObject(); 
@@ -3388,17 +3393,54 @@ maps.push(new MapBundle(map127, gameObjects127));
  gO.line1X = 3 * 16; 
  gO.line1Y = 7 * 16; 
  gO.line2X = 4 * 16; 
- gO.line2Y = (8 * 16) - 6; 
+ gO.line2Y = (8 * 16) - 6;
+gO.isSaleItem = true; 
  gameObjects129.push(gO); 
 
  gO = new GameObject() 
- gO.x = (8*16)-4; 
+ gO.x = (6*16); 
  gO.y = (9.5*16); 
- gO.width = 8; 
+ gO.width = 16; 
  gO.height = 16; 
- gO.isPickUpItem = true; 
- gO.pickUpItemNum = 14; 
+ gO.isPickUpItem = true;
+ gO.isSaleItem = true;
+ gO.line1Full = "160";
+ gO.cost = 160; 
+ gO.pickUpItemNum = 15; 
  gameObjects129.push(gO); 
+ 
+  gO = new GameObject() 
+ gO.x = (8*16); 
+ gO.y = (9.5*16); 
+ gO.width = 16; 
+ gO.height = 16; 
+ gO.isPickUpItem = true;
+ gO.isSaleItem = true;
+ gO.line1Full = "100";
+ gO.cost = 100;
+ gO.pickUpItemNum = 16; 
+ gameObjects129.push(gO); 
+ 
+   gO = new GameObject() 
+ gO.x = (10*16); 
+ gO.y = (9.5*16); 
+ gO.width = 16; 
+ gO.height = 16; 
+ gO.isPickUpItem = true;
+ gO.isSaleItem = true;
+ gO.line1Full = "60"; 
+ gO.cost = 60;
+ gO.pickUpItemNum = 3; 
+ gameObjects129.push(gO);
+ 
+ gO = new GameObject() 
+ gO.x = (3*16); 
+ gO.y = (10.5*16); 
+ gO.width = 16; 
+ gO.height = 16; 
+ gO.isSaleRupee = true;
+ gO.isSaleItem = true; 
+ gameObjects129.push(gO);
  
  maps.push(new MapBundle(map129, gameObjects129));
  /////////////////////////////////////////////////////////////////// -->

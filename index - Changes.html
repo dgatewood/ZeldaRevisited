@@ -285,6 +285,14 @@ function drawLink()
 				ctx.drawImage(hud, 555, 137, 8, 16, 
 						linkX - 2, linkY - 14, 8, 16);
 				break;
+			case 15:
+				ctx.drawImage(link1, 334, 197, 12, 12, 
+					linkX - 2, linkY - 14, 12, 12);
+				break;
+			case 16:
+				ctx.drawImage(link1, 364, 255, 8, 16, 
+					linkX - 2, linkY - 14, 8, 16);
+				break;
 		}
 	}
 	else
@@ -564,98 +572,148 @@ function drawGameObjects()
 {
 	for(let i = 0; i < gameObjects.length; i++)
 	{
-		
+		if(gameObjects[i].isSaleRupee)
+		{
+			gameObjects[i].counter+=1;
+			if(gameObjects[i].counter%5==0)
+			{
+				gameObjects[i].rupeeImage+=1;
+			}
+			if(gameObjects[i].rupeeImage > 1)
+			{
+				gameObjects[i].rupeeImage = 0;
+			}
+			if(gameObjects[i].rupeeImage == 0)
+			{
+				ctx.drawImage(link1, 244, 225, 8, 16, 
+						gameObjects[i].x, gameObjects[i].y, 8,16);
+			}
+			else
+			{
+				ctx.drawImage(link1, 274, 225, 8, 16, 
+						gameObjects[i].x, gameObjects[i].y, 8, 16);
+			}
+			ctx.drawImage(hud, 519, 117, 8, 8, 
+				gameObjects[i].x + 12, gameObjects[i].y + 6, 8, 8);
+			
+		}
 		if(gameObjects[i].isPickUpItem)
 		{
+			//0 - boomerang
+			//1 - bomb
+			//2 - bow and arrow
+			//3 - candle
+			//4 - flute
+			//5 - meat
+			//6 - potion(red or blue)
+			//7 - magic rod
+			//8 - raft
+			//9 - book of magic
+			//10 - ring
+			//11 - ladder
+			//12 - key magical
+			//13 - bracelet
+			//14 - wood sword
+			//15 - large shield
+			//16 - nonmagical key
 			switch(gameObjects[i].pickUpItemNum)
 			{
 				case 0:
 					gO = new GameObject();
 					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
 					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-					lastPickUpItem = gameObjects[i].pickUpItemNum;
 					break;
 				case 1:
 					gO = new GameObject();
 					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
 					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-					lastPickUpItem = gameObjects[i].pickUpItemNum;
 					break;
 				case 2:
 					gO = new GameObject();
 					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
 					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-					lastPickUpItem = gameObjects[i].pickUpItemNum;
 					break;
 				case 3:
+					ctx.drawImage(hud, 644, 137, 8, 16, 
+						gameObjects[i].x, gameObjects[i].y, 8, 16);
+					if(gameObjects[i].isSaleItem)
+					{
+						ctx.fillText(gameObjects[i].line1Full, gameObjects[i].x - 8, gameObjects[i].y + 32);
+					}
 					gO = new GameObject();
 					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
 					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-					lastPickUpItem = gameObjects[i].pickUpItemNum;
 					break;
 				case 4:
 					gO = new GameObject();
 					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
 					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-					lastPickUpItem = gameObjects[i].pickUpItemNum;
 					break;
 				case 5:
 					gO = new GameObject();
 					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
 					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-					lastPickUpItem = gameObjects[i].pickUpItemNum;
 					break;	
 				case 6:
 					gO = new GameObject();
 					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
 					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-					lastPickUpItem = gameObjects[i].pickUpItemNum;
 					break;
 				case 7:
 					gO = new GameObject();
 					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
 					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-					lastPickUpItem = gameObjects[i].pickUpItemNum;
 					break;
 				case 8:
 					gO = new GameObject();
 					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
 					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-					lastPickUpItem = gameObjects[i].pickUpItemNum;
 					break;
 				case 9:
 					gO = new GameObject();
 					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
 					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-					lastPickUpItem = gameObjects[i].pickUpItemNum;
 					break;
 				case 10:
 					gO = new GameObject();
 					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
 					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-					lastPickUpItem = gameObjects[i].pickUpItemNum;
 					break;
 				case 11:
 					gO = new GameObject();
 					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
 					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-					lastPickUpItem = gameObjects[i].pickUpItemNum;
 					break;
 				case 12:
 					gO = new GameObject();
 					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
 					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-					lastPickUpItem = gameObjects[i].pickUpItemNum;
 					break;
 				case 13:
 					gO = new GameObject();
 					gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
 					inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-					lastPickUpItem = gameObjects[i].pickUpItemNum;
 					break;
 				case 14:
 					ctx.drawImage(hud, 555, 137, 8, 16, 
 						gameObjects[i].x, gameObjects[i].y, 8, 16);
+					break;
+				case 15:
+					ctx.drawImage(link1, 334, 197, 12, 12, 
+						gameObjects[i].x, gameObjects[i].y, 12, 12);
+					if(gameObjects[i].isSaleItem)
+					{
+						ctx.fillText(gameObjects[i].line1Full, gameObjects[i].x - 8, gameObjects[i].y + 32);
+					}
+					break;
+				case 16:
+					ctx.drawImage(link1, 364, 255, 8, 16, 
+						gameObjects[i].x, gameObjects[i].y, 8, 16);
+					if(gameObjects[i].isSaleItem)
+					{
+						ctx.fillText(gameObjects[i].line1Full, gameObjects[i].x - 8, gameObjects[i].y + 32);
+					}
+					
 					break;
 			}
 		}
@@ -714,6 +772,11 @@ function drawGameObjects()
 		if(gameObjects[i].isOldWoman)
 		{
 			ctx.drawImage(chars1, 35, 11, 16, 16, 
+						gameObjects[i].x, gameObjects[i].y, 16, 16);
+		}
+		if(gameObjects[i].isMerchant)
+		{
+			ctx.drawImage(chars1, 109, 11, 16, 16, 
 						gameObjects[i].x, gameObjects[i].y, 16, 16);
 		}
 		if(gameObjects[i].isRupee)
@@ -1105,7 +1168,7 @@ function findRestOfRoute(cR, cC, tR, tC, vNodes2)
 			currentNodes.push(new Point(cR - 1, cC));
 		}
 	}
-	if(cR <= 14 && gameMap[cR + 1][cC] == 2)
+	if(cR <= 13 && gameMap[cR + 1][cC] == 2)
 	{
 		if(!isInNodes(cR +1, cC, vNodes))
 		{
@@ -1172,7 +1235,7 @@ function gameObjectCollision(x, y, objects, isLink, isSword, isBomb,
 						}
 						if(objects[i].isPickUpItem)
 						{
-							playPickUpItemAnimation = true;
+							
 							///There are a number of pick up items. The first 8 are selctable within
 							/// the inventory screen. The following 6 sit on top of the selectable inventory
 							/// and are automatically equipped and used by link.
@@ -1188,103 +1251,176 @@ function gameObjectCollision(x, y, objects, isLink, isSword, isBomb,
 							//9 - book of magic
 							//10 - ring
 							//11 - ladder
-							//12 - key
+							//12 - key magical
 							//13 - bracelet
 							//14 - wood sword
-							switch(gameObjects[i].pickUpItemNum)
+							//15 - large shield
+							//16 - nonmagical key
+							switch(objects[i].pickUpItemNum)
 							{
 								
 								case 0:
-									
+									objects.splice(i,1);
+									animationCounter = 0;
+									playPickUpItemAnimation = true;
 									break;
 								case 1:
 									gO = new GameObject();
-									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
-									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									gO.pickUpItemNum = objects[i].pickUpItemNum;
+									inventoryItems[objects[i].pickUpItemNum] = gO;
+									lastPickUpItem = objects[i].pickUpItemNum;
+									objects.splice(i,1);
+									animationCounter = 0;
+									playPickUpItemAnimation = true;
 									break;
 								case 2:
 									gO = new GameObject();
-									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
-									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									gO.pickUpItemNum = objects[i].pickUpItemNum;
+									inventoryItems[objects[i].pickUpItemNum] = gO;
+									lastPickUpItem = objects[i].pickUpItemNum;
+									objects.splice(i,1);
+									animationCounter = 0;
+									playPickUpItemAnimation = true;
 									break;
 								case 3:
-									gO = new GameObject();
-									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
-									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									if(objects[i].isSaleItem && rupeeAmount >= objects[i].cost)
+									{
+										lastPickUpItem = 3;
+										animationCounter = 0;
+										gO = new GameObject();
+										gO.pickUpItemNum = objects.pickUpItemNum;
+										inventoryItems[objects.pickUpItemNum] = gO;
+										rupeeAmount -= objects.cost;
+										objects.splice(i,1);
+										playPickUpItemAnimation = true;
+										destroySaleItems(objects);
+									}
 									break;
 								case 4:
 									gO = new GameObject();
-									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
-									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									gO.pickUpItemNum = objects[i].pickUpItemNum;
+									inventoryItems[objects[i].pickUpItemNum] = gO;
+									lastPickUpItem = objects[i].pickUpItemNum;
+									objects.splice(i,1);
+									animationCounter = 0;
+									playPickUpItemAnimation = true;
 									break;
 								case 5:
 									gO = new GameObject();
-									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
-									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									gO.pickUpItemNum = objects[i].pickUpItemNum;
+									inventoryItems[objects[i].pickUpItemNum] = gO;
+									lastPickUpItem = objects[i].pickUpItemNum;
+									objects.splice(i,1);
+									animationCounter = 0;
+									playPickUpItemAnimation = true;
 									break;	
 								case 6:
 									gO = new GameObject();
-									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
-									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									gO.pickUpItemNum = objects[i].pickUpItemNum;
+									inventoryItems[objects[i].pickUpItemNum] = gO;
+									lastPickUpItem = objects[i].pickUpItemNum;
+									objects.splice(i,1);
+									animationCounter = 0;
+									playPickUpItemAnimation = true;
 									break;
 								case 7:
 									gO = new GameObject();
-									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
-									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									gO.pickUpItemNum = objects[i].pickUpItemNum;
+									inventoryItems[objects[i].pickUpItemNum] = gO;
+									lastPickUpItem = objects[i].pickUpItemNum;
+									objects.splice(i,1);
+									animationCounter = 0;
+									playPickUpItemAnimation = true;
 									break;
 								case 8:
 									gO = new GameObject();
-									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
-									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									gO.pickUpItemNum = objects[i].pickUpItemNum;
+									inventoryItems[objects[i].pickUpItemNum] = gO;
+									lastPickUpItem = objects[i].pickUpItemNum;
+									objects.splice(i,1);
+									animationCounter = 0;
+									playPickUpItemAnimation = true;
 									break;
 								case 9:
 									gO = new GameObject();
-									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
-									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									gO.pickUpItemNum = objects[i].pickUpItemNum;
+									inventoryItems[objects[i].pickUpItemNum] = gO;
+									lastPickUpItem = objects[i].pickUpItemNum;
+									objects.splice(i,1);
+									animationCounter = 0;
+									playPickUpItemAnimation = true;
 									break;
 								case 10:
 									gO = new GameObject();
-									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
-									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									gO.pickUpItemNum = objects[i].pickUpItemNum;
+									inventoryItems[objects[i].pickUpItemNum] = gO;
+									lastPickUpItem = objects[i].pickUpItemNum;
+									objects.splice(i,1);
+									animationCounter = 0;
 									break;
 								case 11:
 									gO = new GameObject();
-									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
-									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									gO.pickUpItemNum = objects[i].pickUpItemNum;
+									inventoryItems[objects[i].pickUpItemNum] = gO;
+									lastPickUpItem = objects[i].pickUpItemNum;
+									objects.splice(i,1);
+									animationCounter = 0;
+									playPickUpItemAnimation = true;
 									break;
 								case 12:
 									gO = new GameObject();
-									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
-									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									gO.pickUpItemNum = objects[i].pickUpItemNum;
+									inventoryItems[objects[i].pickUpItemNum] = gO;
+									lastPickUpItem = objects[i].pickUpItemNum;
+									objects.splice(i,1);
+									animationCounter = 0;
+									playPickUpItemAnimation = true;
 									break;
 								case 13:
 									gO = new GameObject();
-									gO.pickUpItemNum = gameObjects[i].pickUpItemNum;
-									inventoryItems[gameObjects[i].pickUpItemNum] = gO;
-									lastPickUpItem = gameObjects[i].pickUpItemNum;
+									gO.pickUpItemNum = objects[i].pickUpItemNum;
+									inventoryItems[objects[i].pickUpItemNum] = gO;
+									lastPickUpItem = objects[i].pickUpItemNum;
+									objects.splice(i,1);
+									animationCounter = 0;
+									playPickUpItemAnimation = true;
 									break;
 								case 14:
 									lastPickUpItem = 14;
 									swordEquipped = 1;
 									hasSword = true;
 									playSound("./sounds/item.mp3");
+									objects.splice(i,1);
+									animationCounter = 0;
+									playPickUpItemAnimation = true;
+									destroySaleItems(objects);
+									break;
+								case 15:
+									if(objects[i].isSaleItem && rupeeAmount >= objects[i].cost)
+									{
+										lastPickUpItem = 15;
+										rupeeAmount -= objects[i].cost;
+										objects.splice(i,1);
+										animationCounter = 0;
+										playPickUpItemAnimation = true;
+										destroySaleItems(objects);
+									}
+									break;
+								case 16:
+									if(objects[i].isSaleItem && rupeeAmount >= objects[i].cost)
+									{
+										lastPickUpItem = 16;
+										rupeeAmount -= objects[i].cost;
+										keyNum += 1;
+										objects.splice(i,1);
+										animationCounter = 0;
+										playPickUpItemAnimation = true;
+										destroySaleItems(objects);
+									}
+									break;
 									
 							}
 							
-							objects.splice(i,1);
-							animationCounter = 0;
 							break;
 						}
 						if((objects[i].waterProjectile || objects[i].isEnemy) && !linkNeedsToBounce && !linkIsInvincible)
@@ -1428,6 +1564,18 @@ function gameObjectCollision(x, y, objects, isLink, isSword, isBomb,
 								}
 					}
 				}
+		}
+	}
+}
+
+function destroySaleItems(objects)
+{
+	for(let j = 0; j < objects.length; j++)
+	{
+		if(objects[j].isSaleItem)
+		{
+			objects.splice(j,1);
+			j--;
 		}
 	}
 }

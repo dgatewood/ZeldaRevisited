@@ -54,6 +54,11 @@ function GameObject()
 	this.waterProjectile = false;
 	this.angle = 0;
 	this.cost = 0;
+	this.xSpeed = 0;
+	this.ySpeed = 0;
+	this.rockProjectile = false;
+	this.needsToShoot = false;
+	this.shootCounter = 0;
 }
 
 let gO = new GameObject();

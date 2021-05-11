@@ -44,7 +44,7 @@ hud.src = "pausescreen.png";
 let backgroundMusic = new Audio();
 backgroundMusic.src = "./sounds/overworld_edit.mp3";
 backgroundMusic.loop = true;
-let fps = 60;
+let fps = 30;
 let animationCounter = 0;
 let currentAnimation = 0;
 let animationSpeed = 10;
@@ -82,6 +82,9 @@ gameObjects = maps[119].gameobjects;
 gameMap = maps[119].map;
 let currentMap = 119;
 addMapGameObjects(gameMap, gameObjects);
+let returnToGame = false;
+let needInventoryScreen = false;
+let inventoryOffset = 0;
 
 function playSound(source)
 {
@@ -89,9 +92,6 @@ function playSound(source)
 	sound.src = source;
 	sound.play();
 }
-
-
-
 
 function keyDownHandler(e){
     if(e.keyCode == 37)
@@ -125,6 +125,14 @@ function keyDownHandler(e){
 	{
 		hasGameStarted = true;
 		backgroundMusic.play();
+	}
+	if(e.keyCode == 13 && hasGameStarted)
+	{
+		if(!needInventoryScreen)
+		{
+			needInventoryScreen = true;
+		}
+		returnToGame = !returnToGame;
 	}
 }
 
@@ -167,7 +175,7 @@ function drawMap(level)
 function drawLink()
 {
 
-	let speed = 2;
+	let speed = 4;
 	animationCounter++;
 	if(linkNeedsToBounce)
 	{
@@ -803,7 +811,7 @@ function drawGameObjects()
 		}
 		if(gameObjects[i].isEnemy)
 		{
-			if(gameObjects[i].enemyType == 1)
+			if(gameObjects[i].enemyType == 1 || gameObjects[i].enemyType == 3)
 			{
 				gameObjects[i].counter++;
 				if(gameObjects[i].x == gameObjects[i].nextX &&
@@ -822,14 +830,59 @@ function drawGameObjects()
 					gameObjects[i].enemyPath = copyArray(pathFound);
 				}
 			
-				
-				if(gameObjects[i].enemyPath[0] != null && 
-				gameObjects[i].nextX == -1 && 
-				gameObjects[i].nextY == -1)
+				if(gameObjects[i].needsToShoot)
 				{
-					gameObjects[i].nextX = gameObjects[i].enemyPath[0].col * 16;
-					gameObjects[i].nextY = gameObjects[i].enemyPath[0].row * 16;
-					gameObjects[i].enemyPath.splice(0,1);
+					gameObjects[i].shootCounter++;
+					if(gameObjects[i].shootCounter == 100)
+					{
+						gO = new GameObject();
+						gO.x = gameObjects[i].x;
+						gO.y = gameObjects[i].y;
+						if(gameObjects[i].direction == "down")
+						{
+							gO.ySpeed = 2;
+						}
+						if(gameObjects[i].direction == "up")
+						{
+							gO.ySpeed = -2;
+						}
+						if(gameObjects[i].direction == "right")
+						{
+							gO.xSpeed = 2;
+						}
+						if(gameObjects[i].direction == "left")
+						{
+							gO.xSpeed = -2;
+						}
+						gO.waterProjectile = false;
+						gO.isPortal = false;
+						gO.isRupee = false;
+						gO.rockProjectile = true;
+						gameObjects.push(gO);
+						
+					}
+					if(gameObjects[i].shootCounter > 130)
+					{
+						gameObjects[i].needsToShoot = false;
+						gameObjects[i].shootCounter = 0;
+					}
+					
+				}
+				else
+				{
+					if(gameObjects[i].enemyPath[0] != null && 
+					gameObjects[i].nextX == -1 && 
+					gameObjects[i].nextY == -1)
+					{
+						gameObjects[i].nextX = gameObjects[i].enemyPath[0].col * 16;
+						gameObjects[i].nextY = gameObjects[i].enemyPath[0].row * 16;
+						gameObjects[i].enemyPath.splice(0,1);
+						let chance = Math.floor(Math.random() * 20);
+						if(chance == 0)
+						{
+							gameObjects[i].needsToShoot = true;
+						}
+					}
 				}
 				if(gameObjects[i].counter >= 10)
 				{
@@ -840,56 +893,114 @@ function drawGameObjects()
 						gameObjects[i].frame = 0;
 					}
 				}
-				if(gameObjects[i].direction == "down")
+				if(gameObjects[i].enemyType == 1)
 				{
-					if(gameObjects[i].frame == 0)
+					if(gameObjects[i].direction == "down")
 					{
-						ctx.drawImage(enemies, 0, 0, 16, 16, 
-						gameObjects[i].x, gameObjects[i].y, 16, 16);
+						if(gameObjects[i].frame == 0)
+						{
+							ctx.drawImage(enemies, 0, 0, 16, 16, 
+							gameObjects[i].x, gameObjects[i].y, 16, 16);
+						}
+						if(gameObjects[i].frame == 1)
+						{
+							ctx.drawImage(enemies, 0, 30, 16, 16, 
+							gameObjects[i].x, gameObjects[i].y, 16, 16);
+						}
 					}
-					if(gameObjects[i].frame == 1)
+					else if(gameObjects[i].direction == "up")
 					{
-						ctx.drawImage(enemies, 0, 30, 16, 16, 
-						gameObjects[i].x, gameObjects[i].y, 16, 16);
+						if(gameObjects[i].frame == 0)
+						{
+							ctx.drawImage(enemies, 60, 0, 16, 16, 
+							gameObjects[i].x, gameObjects[i].y, 16, 16);
+						}
+						if(gameObjects[i].frame == 1)
+						{
+							ctx.drawImage(enemies, 60, 30, 16, 16, 
+							gameObjects[i].x, gameObjects[i].y, 16, 16);
+						}
+					}
+					else if(gameObjects[i].direction == "left")
+					{
+						if(gameObjects[i].frame == 0)
+						{
+							ctx.drawImage(enemies, 30, 0, 16, 16, 
+							gameObjects[i].x, gameObjects[i].y, 16, 16);
+						}
+						if(gameObjects[i].frame == 1)
+						{
+							ctx.drawImage(enemies, 30, 30, 16, 16, 
+							gameObjects[i].x, gameObjects[i].y, 16, 16);
+						}
+					}
+					else
+					{
+						if(gameObjects[i].frame == 0)
+						{
+							ctx.drawImage(enemies, 90, 0, 16, 16, 
+							gameObjects[i].x, gameObjects[i].y, 16, 16);
+						}
+						if(gameObjects[i].frame == 1)
+						{
+							ctx.drawImage(enemies, 90, 30, 16, 16, 
+							gameObjects[i].x, gameObjects[i].y, 16, 16);
+						}
 					}
 				}
-				else if(gameObjects[i].direction == "up")
+				if(gameObjects[i].enemyType == 3)
 				{
-					if(gameObjects[i].frame == 0)
+					if(gameObjects[i].direction == "down")
 					{
-						ctx.drawImage(enemies, 60, 0, 16, 16, 
-						gameObjects[i].x, gameObjects[i].y, 16, 16);
+						if(gameObjects[i].frame == 0)
+						{
+							ctx.drawImage(enemies, 120, 0, 16, 16, 
+							gameObjects[i].x, gameObjects[i].y, 16, 16);
+						}
+						if(gameObjects[i].frame == 1)
+						{
+							ctx.drawImage(enemies, 120, 30, 16, 16, 
+							gameObjects[i].x, gameObjects[i].y, 16, 16);
+						}
 					}
-					if(gameObjects[i].frame == 1)
+					else if(gameObjects[i].direction == "up")
 					{
-						ctx.drawImage(enemies, 60, 30, 16, 16, 
-						gameObjects[i].x, gameObjects[i].y, 16, 16);
+						if(gameObjects[i].frame == 0)
+						{
+							ctx.drawImage(enemies,180, 0, 16, 16, 
+							gameObjects[i].x, gameObjects[i].y, 16, 16);
+						}
+						if(gameObjects[i].frame == 1)
+						{
+							ctx.drawImage(enemies, 180, 30, 16, 16, 
+							gameObjects[i].x, gameObjects[i].y, 16, 16);
+						}
 					}
-				}
-				else if(gameObjects[i].direction == "left")
-				{
-					if(gameObjects[i].frame == 0)
+					else if(gameObjects[i].direction == "left")
 					{
-						ctx.drawImage(enemies, 30, 0, 16, 16, 
-						gameObjects[i].x, gameObjects[i].y, 16, 16);
+						if(gameObjects[i].frame == 0)
+						{
+							ctx.drawImage(enemies, 150, 0, 16, 16, 
+							gameObjects[i].x, gameObjects[i].y, 16, 16);
+						}
+						if(gameObjects[i].frame == 1)
+						{
+							ctx.drawImage(enemies, 150, 30, 16, 16, 
+							gameObjects[i].x, gameObjects[i].y, 16, 16);
+						}
 					}
-					if(gameObjects[i].frame == 1)
+					else
 					{
-						ctx.drawImage(enemies, 30, 30, 16, 16, 
-						gameObjects[i].x, gameObjects[i].y, 16, 16);
-					}
-				}
-				else
-				{
-					if(gameObjects[i].frame == 0)
-					{
-						ctx.drawImage(enemies, 90, 0, 16, 16, 
-						gameObjects[i].x, gameObjects[i].y, 16, 16);
-					}
-					if(gameObjects[i].frame == 1)
-					{
-						ctx.drawImage(enemies, 90, 30, 16, 16, 
-						gameObjects[i].x, gameObjects[i].y, 16, 16);
+						if(gameObjects[i].frame == 0)
+						{
+							ctx.drawImage(enemies, 210, 0, 16, 16, 
+							gameObjects[i].x, gameObjects[i].y, 16, 16);
+						}
+						if(gameObjects[i].frame == 1)
+						{
+							ctx.drawImage(enemies, 210, 30, 16, 16, 
+							gameObjects[i].x, gameObjects[i].y, 16, 16);
+						}
 					}
 				}
 				
@@ -986,12 +1097,12 @@ function drawGameObjects()
 			if(gameObjects[i].enemyType == 2)
 			{
 				gameObjects[i].counter++;
-				if(gameObjects[i].counter < 180)
+				if(gameObjects[i].counter < 240)
 				{
 					ctx.drawImage(enemies, 180, 300, 16, 16, 
 						gameObjects[i].x, gameObjects[i].y, 16, 16);
 				}
-				else if(gameObjects[i].counter == 180)
+				else if(gameObjects[i].counter == 240)
 				{
 					////new water projectile
 					go = new GameObject();
@@ -1000,6 +1111,7 @@ function drawGameObjects()
 					gO.width = 8; 
 					gO.height = 10;
 					gO.waterProjectile = true;
+					gO.isPortal = false;
 					let adjustedX = gameObjects[i].x - linkX;
 					let adjustedY = gameObjects[i].y - linkY;
 					let angle = -1 * Math.atan2(adjustedX, adjustedY) - 
@@ -1007,20 +1119,31 @@ function drawGameObjects()
 					gO.angle = angle;
 					gameObjects.push(gO);
 				}
-				else if(gameObjects[i].counter < 360)
+				else if(gameObjects[i].counter < 420)
 				{
 					//hide under water
 				}
-				else if(gameObjects[i].counter > 360)
+				else if(gameObjects[i].counter > 420)
 				{
 					//move coords
+					let count = 0;
+					let newCol = Math.floor(Math.random() * 16);
+					let newRow = Math.floor(Math.random() * 11) + 4;
+					while(count < 10 || gameMap[newRow][newCol] != 91)
+					{
+						count++;
+						newCol = Math.floor(Math.random() * 16);
+						newRow = Math.floor(Math.random() * 11) + 4;
+					}
+					gameObjects[i].x = newCol * 16;
+					gameObjects[i].y = newRow * 16;
 					gameObjects[i].counter = 0;
 				}
 			}
 			
 		}
 		if(gameObjects[i].waterProjectile)
-			{
+		{
 				gameObjects[i].counter+=1;
 				if(gameObjects[i].counter==0)
 				{
@@ -1046,6 +1169,14 @@ function drawGameObjects()
 					gameObjects.splice(i, 1);
 				}
 			}
+			
+		if(gameObjects[i].rockProjectile)
+		{
+			ctx.drawImage(enemies, 90, 300, 16, 16, 
+							gameObjects[i].x, gameObjects[i].y, 10, 10);
+			gameObjects[i].x += gameObjects[i].xSpeed;
+			gameObjects[i].y += gameObjects[i].ySpeed;
+		}
 	}
 }
 
@@ -1053,15 +1184,15 @@ function drawGameObjects()
 function getNewCoordinates(currentRow, currentCol)
 {
 	pathFound = [];
-	let randRow = Math.floor(Math.random() * 11) + 4;
-	let randCol = Math.floor(Math.random() * 16);
+	let randRow = Math.floor(Math.random() * 11) + 3;
+	let randCol = Math.floor(Math.random() * 15);
 	
 	//while(randRow > 14 || randRow < 0 ||
 	//randCol > 15 || randRow < 0 ||
 	while(gameMap[randRow][randCol] != 2)
 	{
-		randRow = Math.floor(Math.random() * 11) + 4;
-	    randCol = Math.floor(Math.random() * 16);
+		randRow = Math.floor(Math.random() * 11) + 3;
+	    randCol = Math.floor(Math.random() * 15);
 	}
 	///0-11 + 4 for rows
 	//console.log("Game map at randRow and randCol: " + gameMap[randRow][randCol]);
@@ -1070,13 +1201,10 @@ function getNewCoordinates(currentRow, currentCol)
 	while(pathFound.length == 0)
 	{
 		console.log("Old path didnt work, need new path..");
-		randRow = Math.floor(Math.random() * 12) + 4;
-		randCol = Math.floor(Math.random() * 16);
+		randRow = Math.floor(Math.random() * 11) + 3;
+		randCol = Math.floor(Math.random() * 15);
 		foundPath(currentRow, currentCol, randRow, randCol);
-	}
-	
-	//return new Point(randRow, randCol);
-	
+	}	
 }
 
 function foundPath(cR, cC, tR, tC)
@@ -1095,7 +1223,7 @@ function foundPath(cR, cC, tR, tC)
 	{
 		currentNodes.push(new Point(cR - 1, cC));
 	}
-	if(cR <= 14 && gameMap[cR + 1][cC] == 2)
+	if(cR <= 13 && gameMap[cR + 1][cC] == 2)
 	{
 		currentNodes.push(new Point(cR + 1, cC));
 	}
@@ -1423,12 +1551,23 @@ function gameObjectCollision(x, y, objects, isLink, isSword, isBomb,
 							
 							break;
 						}
-						if((objects[i].waterProjectile || objects[i].isEnemy) && !linkNeedsToBounce && !linkIsInvincible)
+						if((objects[i].waterProjectile || objects[i].rockProjectile || objects[i].isEnemy) && !linkNeedsToBounce && !linkIsInvincible)
 						{
 							//
 							//linkNeedsToBounce = true;
 							//getBounceLocLink(objects[i].direction);
+							if(objects[i].rockProjectile && 
+							((lastButtonPressed == "up" &&  objects[i].ySpeed >0) || 
+							(lastButtonPressed == "down" &&  objects[i].ySpeed <0) ||
+							(lastButtonPressed == "left" &&  objects[i].xSpeed >0) ||
+							(lastButtonPressed == "right" &&  objects[i].xSpeed <0)))
+							{
+								playSound("./sounds/LOZ_shield.wav");
+								objects.splice(i,1);
+								return;
+							}
 							playSound("./sounds/LOZ_link_hurt.wav");
+							objects.splice(i,1);
 							currentLinkHearts -= .5;
 							linkIsInvincible = true;
 							invincibleTime = 30;
@@ -1683,12 +1822,12 @@ function getBounceLocLink(direction)
 	<!-- } -->
 }
 
-function drawHUD()
+function drawHUD(offset)
 {
 	ctx.drawImage(hud, 258, 11, 256, 56, 
-				0, 0, 256, 56);
+				0, 0 + offset, 256, 56);
 	ctx.drawImage(hud, 2, 112, 16, 64, 
-				176, 32, 64,  16);
+				176, 32 + offset, 64,  16);
 	//draw Hearts
 	let fullHearts = Math.floor(currentLinkHearts)
 	let halfHearts = currentLinkHearts - fullHearts;
@@ -1706,7 +1845,7 @@ function drawHUD()
 				heartY = 40;
 			}
 		ctx.drawImage(hud, 627, 117, 8, 8, 
-				heartX, heartY, 8, 8);
+				heartX, heartY + offset, 8, 8);
 	}
 	let halfHeartX = 0;
 	let halfHeartY = 0;
@@ -1724,7 +1863,7 @@ function drawHUD()
 				heartY = 40;
 			}
 		ctx.drawImage(hud, 645, 117, 8, 8, 
-				heartX, heartY, 8, 8);
+				heartX, heartY + offset, 8, 8);
 		if(i == fullHearts - 1)
 		{
 			
@@ -1745,70 +1884,70 @@ function drawHUD()
 	if(halfHearts > 0 && fullHearts >= 1)
 	{
 		ctx.drawImage(hud, 636, 117, 8, 8, 
-				halfHeartX, halfHeartY, 8, 8);
+				halfHeartX, halfHeartY + offset, 8, 8);
 	}
 	else if(halfHearts > 0 && fullHearts == 0)
 	{
 		ctx.drawImage(hud, 636, 117, 8, 8, 
-				176, 40, 8, 8);
+				176, 40 + offset, 8, 8);
 	}
 	
 	
 	////This draws the rupee values
 	///cover with black
 	ctx.drawImage(hud, 354, 36, 24, 6, 
-				96, 10, 24, 50);
+				96, 10 + offset, 24, 50);
 	///124
 	if(rupeeAmount < 100)
 	{
 		ctx.drawImage(hud, 519, 117, 8, 8, 
-				96, 16, 8, 8);
+				96, 16 + offset, 8, 8);
 		let firstNum = rupeeAmount %10;
 		ctx.drawImage(hud, 528 + (8*firstNum) + (1*firstNum), 117, 8, 8, 
-				96 + 16, 16, 8, 8);
+				96 + 16, 16 + offset, 8, 8);
 		let secondNum = Math.floor(rupeeAmount/10);
 		ctx.drawImage(hud, 528 + (8*secondNum) + (1*secondNum), 117, 8, 8, 
-				96 + 8, 16, 8, 8);
+				96 + 8, 16 + offset, 8, 8);
 	}
 	else{
 		let firstNum = rupeeAmount %10;
 		ctx.drawImage(hud, 528 + (8*firstNum) + (1*firstNum), 117, 8, 8, 
-				96 + 16, 16, 8, 8);
+				96 + 16, 16 + offset, 8, 8);
 		let secondNum = Math.floor(rupeeAmount/10);
 		let thirdNum = Math.floor(rupeeAmount/ 100) * 100;
 		secondNum = ((rupeeAmount - thirdNum) - firstNum) / 10;
 		ctx.drawImage(hud, 528 + (8*secondNum) + (1*secondNum), 117, 8, 8, 
-				96 + 8, 16, 8, 8);
+				96 + 8, 16 + offset, 8, 8);
 		thirdNum = Math.floor(rupeeAmount / 100);
 		ctx.drawImage(hud, 528 + (8*thirdNum) + (1*thirdNum), 117, 8, 8, 
-				96 , 16, 8, 8);
+				96 , 16 + offset, 8, 8);
 	}
 	
 	//draw bomb and key nums
 	///key num
 	ctx.drawImage(hud, 519, 117, 8, 8, 
-				96, 32, 8, 8);
+				96, 32 + offset, 8, 8);
 	ctx.drawImage(hud, 528 + (8*keyNum) + (1*keyNum), 117, 8, 8, 
-				96 + 8, 32, 8, 8);
+				96 + 8, 32 + offset, 8, 8);
 	///bomb num
 	ctx.drawImage(hud, 519, 117, 8, 8, 
-				96, 41, 8, 8);
+				96, 41 + offset, 8, 8);
 	ctx.drawImage(hud, 528 + (8*bombNum) + (1*bombNum), 117, 8, 8, 
-				96 + 8, 41, 8, 8);
+				96 + 8, 41 + offset, 8, 8);
 	
 	///Sword and B button items
 	ctx.fillStyle = "black";
-	ctx.fillRect(128, 24, 8, 16);
-	ctx.fillRect(152, 24, 8, 16);
+	ctx.fillRect(128, 24 + offset, 8, 16);
+	ctx.fillRect(152, 24 + offset, 8, 16);
 	if(swordEquipped == 1)
 	{
 		ctx.drawImage(hud, 555, 137, 8, 16, 
-				152 , 24, 8, 16);
+				152 , 24 + offset, 8, 16);
 	}
 	
 	///Fill map location in with gray
 	ctx.fillStyle = "gray";
-	ctx.fillRect(16, 8, 64, 48);
+	ctx.fillRect(16, 8 + offset, 64, 48);
 }
 
 function drawGameStart()
@@ -1838,62 +1977,13 @@ function addMapGameObjects(levelMap, objectArray)
 	{
 		for(let j = 0; j < levelMap[0].length; j++)
 		{
+			let linkCanWalkSpaces = [2,28,18,6,12,14,24,30,34,58,64,70,75,76,77,
+			93,94,95,111,112,113,81,82,86,99,100,101,117,118,119,87,88,89,105,
+			106,107,123,124,125,126,127,128,129,131,132,133,134,135,137,138,139,
+			140,141,143];
 			if(i == 4)
 			{
-				if(levelMap[i][j] == 2 
-				|| levelMap[i][j] == 28 
-				|| levelMap[i][j] == 18
-				|| levelMap[i][j] == 6
-				|| levelMap[i][j] == 12
-				|| levelMap[i][j] == 14
-				|| levelMap[i][j] == 24
-				|| levelMap[i][j] == 30
-				|| levelMap[i][j] == 34
-				|| levelMap[i][j] == 58
-				|| levelMap[i][j] == 64
-				|| levelMap[i][j] == 70
-				|| levelMap[i][j] == 75
-				|| levelMap[i][j] == 76
-				|| levelMap[i][j] == 77
-				|| levelMap[i][j] == 93
-				|| levelMap[i][j] == 94
-				|| levelMap[i][j] == 95
-				|| levelMap[i][j] == 111
-				|| levelMap[i][j] == 112
-				|| levelMap[i][j] == 113
-				|| levelMap[i][j] == 81
-				|| levelMap[i][j] == 82
-				|| levelMap[i][j] == 83
-				|| levelMap[i][j] == 99
-				|| levelMap[i][j] == 100
-				|| levelMap[i][j] == 101
-				|| levelMap[i][j] == 117
-				|| levelMap[i][j] == 118
-				|| levelMap[i][j] == 119
-				|| levelMap[i][j] == 87
-				|| levelMap[i][j] == 88
-				|| levelMap[i][j] == 89
-				|| levelMap[i][j] == 105
-				|| levelMap[i][j] == 106
-				|| levelMap[i][j] == 107
-				|| levelMap[i][j] == 123
-				|| levelMap[i][j] == 124
-				|| levelMap[i][j] == 125
-				|| levelMap[i][j] == 126
-				|| levelMap[i][j] == 127
-				|| levelMap[i][j] == 128
-				|| levelMap[i][j] == 129
-				|| levelMap[i][j] == 131
-				|| levelMap[i][j] == 132
-				|| levelMap[i][j] == 133
-				|| levelMap[i][j] == 134
-				|| levelMap[i][j] == 135
-				|| levelMap[i][j] == 137
-				|| levelMap[i][j] == 138
-				|| levelMap[i][j] == 139
-				|| levelMap[i][j] == 140
-				|| levelMap[i][j] == 141
-				|| levelMap[i][j] == 143)
+				if(linkCanWalkSpaces.includes(levelMap[i][j]))
 				{
 					gO = new GameObject()
 					gO.x = j * 16;
@@ -1910,60 +2000,7 @@ function addMapGameObjects(levelMap, objectArray)
 			}
 			else if(i == 14)
 			{
-				if(levelMap[i][j] == 2 
-				|| levelMap[i][j] == 28 
-				|| levelMap[i][j] == 18
-				|| levelMap[i][j] == 6
-				|| levelMap[i][j] == 12
-				|| levelMap[i][j] == 14
-				|| levelMap[i][j] == 24
-				|| levelMap[i][j] == 30
-				|| levelMap[i][j] == 34
-				|| levelMap[i][j] == 58
-				|| levelMap[i][j] == 64
-				|| levelMap[i][j] == 70
-				|| levelMap[i][j] == 75
-				|| levelMap[i][j] == 76
-				|| levelMap[i][j] == 77
-				|| levelMap[i][j] == 93
-				|| levelMap[i][j] == 94
-				|| levelMap[i][j] == 95
-				|| levelMap[i][j] == 111
-				|| levelMap[i][j] == 112
-				|| levelMap[i][j] == 113
-				|| levelMap[i][j] == 81
-				|| levelMap[i][j] == 82
-				|| levelMap[i][j] == 83
-				|| levelMap[i][j] == 99
-				|| levelMap[i][j] == 100
-				|| levelMap[i][j] == 101
-				|| levelMap[i][j] == 117
-				|| levelMap[i][j] == 118
-				|| levelMap[i][j] == 119
-				|| levelMap[i][j] == 87
-				|| levelMap[i][j] == 88
-				|| levelMap[i][j] == 89
-				|| levelMap[i][j] == 105
-				|| levelMap[i][j] == 106
-				|| levelMap[i][j] == 107
-				|| levelMap[i][j] == 123
-				|| levelMap[i][j] == 124
-				|| levelMap[i][j] == 125
-				|| levelMap[i][j] == 126
-				|| levelMap[i][j] == 127
-				|| levelMap[i][j] == 128
-				|| levelMap[i][j] == 129
-				|| levelMap[i][j] == 131
-				|| levelMap[i][j] == 132
-				|| levelMap[i][j] == 133
-				|| levelMap[i][j] == 134
-				|| levelMap[i][j] == 135
-				|| levelMap[i][j] == 137
-				|| levelMap[i][j] == 138
-				|| levelMap[i][j] == 139
-				|| levelMap[i][j] == 140
-				|| levelMap[i][j] == 141
-				|| levelMap[i][j] == 143)
+				if(linkCanWalkSpaces.includes(levelMap[i][j]))
 				{
 					gO = new GameObject()
 					gO.x = j * 16;
@@ -1980,60 +2017,7 @@ function addMapGameObjects(levelMap, objectArray)
 			}
 			else if(j == 0)
 			{
-				if(levelMap[i][j] == 2 
-				|| levelMap[i][j] == 28 
-				|| levelMap[i][j] == 18
-				|| levelMap[i][j] == 6
-				|| levelMap[i][j] == 12
-				|| levelMap[i][j] == 14
-				|| levelMap[i][j] == 24
-				|| levelMap[i][j] == 30
-				|| levelMap[i][j] == 34
-				|| levelMap[i][j] == 58
-				|| levelMap[i][j] == 64
-				|| levelMap[i][j] == 70
-				|| levelMap[i][j] == 75
-				|| levelMap[i][j] == 76
-				|| levelMap[i][j] == 77
-				|| levelMap[i][j] == 93
-				|| levelMap[i][j] == 94
-				|| levelMap[i][j] == 95
-				|| levelMap[i][j] == 111
-				|| levelMap[i][j] == 112
-				|| levelMap[i][j] == 113
-				|| levelMap[i][j] == 81
-				|| levelMap[i][j] == 82
-				|| levelMap[i][j] == 83
-				|| levelMap[i][j] == 99
-				|| levelMap[i][j] == 100
-				|| levelMap[i][j] == 101
-				|| levelMap[i][j] == 117
-				|| levelMap[i][j] == 118
-				|| levelMap[i][j] == 119
-				|| levelMap[i][j] == 87
-				|| levelMap[i][j] == 88
-				|| levelMap[i][j] == 89
-				|| levelMap[i][j] == 105
-				|| levelMap[i][j] == 106
-				|| levelMap[i][j] == 107
-				|| levelMap[i][j] == 123
-				|| levelMap[i][j] == 124
-				|| levelMap[i][j] == 125
-				|| levelMap[i][j] == 126
-				|| levelMap[i][j] == 127
-				|| levelMap[i][j] == 128
-				|| levelMap[i][j] == 129
-				|| levelMap[i][j] == 131
-				|| levelMap[i][j] == 132
-				|| levelMap[i][j] == 133
-				|| levelMap[i][j] == 134
-				|| levelMap[i][j] == 135
-				|| levelMap[i][j] == 137
-				|| levelMap[i][j] == 138
-				|| levelMap[i][j] == 139
-				|| levelMap[i][j] == 140
-				|| levelMap[i][j] == 141
-				|| levelMap[i][j] == 143)
+				if(linkCanWalkSpaces.includes(levelMap[i][j]))
 				{
 					gO = new GameObject()
 					gO.x = -16;
@@ -2050,60 +2034,7 @@ function addMapGameObjects(levelMap, objectArray)
 			}
 			else if(j == 15)
 			{
-				if(levelMap[i][j] == 2 
-				|| levelMap[i][j] == 28 
-				|| levelMap[i][j] == 18
-				|| levelMap[i][j] == 6
-				|| levelMap[i][j] == 12
-				|| levelMap[i][j] == 14
-				|| levelMap[i][j] == 24
-				|| levelMap[i][j] == 30
-				|| levelMap[i][j] == 34
-				|| levelMap[i][j] == 58
-				|| levelMap[i][j] == 64
-				|| levelMap[i][j] == 70
-				|| levelMap[i][j] == 75
-				|| levelMap[i][j] == 76
-				|| levelMap[i][j] == 77
-				|| levelMap[i][j] == 93
-				|| levelMap[i][j] == 94
-				|| levelMap[i][j] == 95
-				|| levelMap[i][j] == 111
-				|| levelMap[i][j] == 112
-				|| levelMap[i][j] == 113
-				|| levelMap[i][j] == 81
-				|| levelMap[i][j] == 82
-				|| levelMap[i][j] == 83
-				|| levelMap[i][j] == 99
-				|| levelMap[i][j] == 100
-				|| levelMap[i][j] == 101
-				|| levelMap[i][j] == 117
-				|| levelMap[i][j] == 118
-				|| levelMap[i][j] == 119
-				|| levelMap[i][j] == 87
-				|| levelMap[i][j] == 88
-				|| levelMap[i][j] == 89
-				|| levelMap[i][j] == 105
-				|| levelMap[i][j] == 106
-				|| levelMap[i][j] == 107
-				|| levelMap[i][j] == 123
-				|| levelMap[i][j] == 124
-				|| levelMap[i][j] == 125
-				|| levelMap[i][j] == 126
-				|| levelMap[i][j] == 127
-				|| levelMap[i][j] == 128
-				|| levelMap[i][j] == 129
-				|| levelMap[i][j] == 131
-				|| levelMap[i][j] == 132
-				|| levelMap[i][j] == 133
-				|| levelMap[i][j] == 134
-				|| levelMap[i][j] == 135
-				|| levelMap[i][j] == 137
-				|| levelMap[i][j] == 138
-				|| levelMap[i][j] == 139
-				|| levelMap[i][j] == 140
-				|| levelMap[i][j] == 141
-				|| levelMap[i][j] == 143)
+				if(linkCanWalkSpaces.includes(levelMap[i][j]))
 				{
 					gO = new GameObject()
 					gO.x = 256;
@@ -2131,12 +2062,20 @@ function addMapGameObjects(levelMap, objectArray)
 	}
 }
 
-
+function drawInventoryScreen(offset)
+{
+	ctx.drawImage(hud, 1, 11, 256, 88, 
+				0, -200 + offset, 256, 88);
+	ctx.drawImage(hud, 1, 112, 256, 88, 
+				0, -112 + offset, 256,  88);
+	ctx.drawImage(hud, 519, 42, 96, 48, 
+				 80, -112 + offset + 16, 96,  48);
+}
 
 function draw () {
    setTimeout(function() {
    requestAnimationFrame(draw);
-   ctx.fillStyle = "rgb(20,20,20)";
+   ctx.fillStyle = "rgb(0,0,0)";
    ctx.fillRect(0,0,800,600);
    ///all code goes here
     if(!hasGameStarted)
@@ -2145,16 +2084,41 @@ function draw () {
 	}
 	else
 	{
-		invincibleTime--;
-		if(invincibleTime <= 0)
-		{
-			linkIsInvincible = false;
+		if(needInventoryScreen)
+		{	
+			if(!returnToGame)
+			{
+				inventoryOffset+=2;
+				if(inventoryOffset > 184)
+				{
+					inventoryOffset = 184;
+				}
+			}
+			else
+			{
+				inventoryOffset-=2;
+				if(inventoryOffset < 0)
+				{
+					inventoryOffset = 0;
+					needInventoryScreen = false;
+				}
+			}
+			drawHUD(inventoryOffset);
+			drawInventoryScreen(inventoryOffset);
 		}
-		drawMap(gameMap);
-		drawLink();
-		gameObjectCollision(linkX, linkY, gameObjects, true, false, false, false, false);
-		drawGameObjects();
-		drawHUD();
+		else
+		{
+			invincibleTime--;
+			if(invincibleTime <= 0)
+			{
+				linkIsInvincible = false;
+			}
+			drawMap(gameMap);
+			drawLink();
+			gameObjectCollision(linkX, linkY, gameObjects, true, false, false, false, false);
+			drawGameObjects();
+			drawHUD(inventoryOffset);
+		}
 	}
    },1000/fps);
 }

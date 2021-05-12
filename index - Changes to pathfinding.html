@@ -826,7 +826,7 @@ function drawGameObjects()
 				{
 					let currRow = Math.floor(gameObjects[i].y/16);
 					let currCol = Math.floor(gameObjects[i].x/16);
-					getNewCoordinates(currRow, currCol);
+					getNewCoordinates(currRow, currCol, i);
 					gameObjects[i].enemyPath = copyArray(pathFound);
 				}
 			
@@ -1181,9 +1181,8 @@ function drawGameObjects()
 }
 
 
-function getNewCoordinates(currentRow, currentCol)
+function getNewCoordinates(currentRow, currentCol, index)
 {
-	pathFound = [];
 	let randRow = Math.floor(Math.random() * 11) + 3;
 	let randCol = Math.floor(Math.random() * 15);
 	
@@ -1197,135 +1196,82 @@ function getNewCoordinates(currentRow, currentCol)
 	///0-11 + 4 for rows
 	//console.log("Game map at randRow and randCol: " + gameMap[randRow][randCol]);
 	//console.log("Target node is: " + randRow + "   " + randCol);
-	foundPath(currentRow, currentCol, randRow, randCol);
-	while(pathFound.length == 0)
+	foundPath(currentRow, currentCol, randRow, randCol, index);
+	while(gameObjects[index].enemyPath.length == 0)
 	{
 		console.log("Old path didnt work, need new path..");
-		randRow = Math.floor(Math.random() * 11) + 3;
+		randRow = Math.floor(Math.random() * 10) + 4;
 		randCol = Math.floor(Math.random() * 15);
-		foundPath(currentRow, currentCol, randRow, randCol);
+		foundPath(currentRow, currentCol, randRow, randCol, index);
 	}	
 }
 
-function foundPath(cR, cC, tR, tC)
+function Pos(row, col)
 {
-	pathFound.push(new Point(cR, cC));
-	let visitedNodes = [];
-	let currentNodes = [];
-	if(cC >= 1 && gameMap[cR][cC - 1] == 2)
-	{
-		currentNodes.push(new Point(cR, cC - 1));
-	}
-	if(cC <= 14 && gameMap[cR][cC + 1] == 2)
-	{
-		currentNodes.push(new Point(cR, cC + 1));
-	}
-	if(cR >= 5 && gameMap[cR - 1][cC] == 2)
-	{
-		currentNodes.push(new Point(cR - 1, cC));
-	}
-	if(cR <= 13 && gameMap[cR + 1][cC] == 2)
-	{
-		currentNodes.push(new Point(cR + 1, cC));
-	}
-	//console.log("CurrentNodes: ");
-	//console.log(currentNodes);
-	visitedNodes.push(new Point(cR, cC));
-	for(let i = 0; i < currentNodes.length; i++)
-	{	
-		visitedNodes.push(new Point(currentNodes[i].row,currentNodes[i].col ));
-		if(currentNodes[i].row == tR &&
-		currentNodes[i].col == tC)
-		{
-			pathFound = visitedNodes;
-			return;
-		}
-		pathFound.push(new Point(currentNodes[i].row,currentNodes[i].col ));
-		findRestOfRoute(currentNodes[i].row, currentNodes[i].col, 
-						tR, tC, visitedNodes)
-	}
-	
+	this.r = row;
+	this.c = col;
 }
 
-function isInNodes(targetR, targetC, nodes)
+function Node(parent,  position)
 {
-	let isInList = false;
-	for(let i = 0; i < nodes.length; i++)
-	{
-		if(nodes[i].row == targetR && nodes[i].col == targetC)
-		{
-			isInList = true;
-			break;
-		}
-	}
-	return isInList;
+	this.parent = parent;
+	this.position = position;
+	
+	this.g = 0;
+	this.h = 0;
+	this.f = 0;
 }
 
-function copyArray(arr)
+///https://medium.com/@nicholas.w.swift/easy-a-star-pathfinding-7e6689c7f7b2
+function aStar(start, end, maze)
 {
-	let arr2 = [];
-	for(let i = 0; i < arr.length; i++)
-	{
-		arr2.push(new Point(arr[i].row, arr[i].col));
-	}
-	return arr2;
-}
-
-function findRestOfRoute(cR, cC, tR, tC, vNodes2)
-{
-	let vNodes = copyArray(vNodes2);
+	start_Node = new Node(null, start);
+	end_Node = new Node(null, end);
+	let open_list = [];
+	let closed_list = [];
 	
-	let currentNodes = [];
+	open_list.push(start_Node);
 	
-	if(cC >= 1 && gameMap[cR][cC - 1] == 2)
+	while(open_list.length > 0)
 	{
-		if(!isInNodes(cR, cC - 1, vNodes))
+		current_node = open_list[0];
+		current_index = 0;
+		 for(let i = 0; i < open_list.length; i++)
+		 {
+			if(open_list[i].f < current_node.f)
+			{
+				current_node = open_list[i];
+				current_index = i;
+			}
+		 }
+		open_list.splice(current_index, 1);
+		closed_list.push(current_node);
+		if(current_node.position.r = end_Node.position.r &&
+		current_node.position.c = end_Node.position.c)
 		{
-			currentNodes.push(new Point(cR, cC - 1));
+			let path = [];
+			let current = current_node;
+			while(current != null)
+			{
+				path.push(current.position);
+				current = current.parent;
+			}
+			return path;
+		}
+		let children = [];
+		let positions = [{0,-1}, {0, 1}, {1, 0}, {-1, 0}];
+		for(let i = 0; i < positions.length; i++)
+		{
+			node_position = {current_node.position[0] + positions[i][0], current_node.position[1] + positions[i][1]};
+			
+			if(node_position[0] > (maze.length - 1) || node_position[0] < 0 || node_position[1] > (maze[0].length - 1) || node_position[1] < 0)
+                continue;
+			if(maze[node_position[0]][node_position[1]] != 2)
+				continue;
+			
+			let new_node = new Node(current_node, node
 		}
 	}
-	if(cC <= 14 && gameMap[cR][cC + 1] == 2)
-	{
-		if(!isInNodes(cR, cC + 1, vNodes))
-		{
-			currentNodes.push(new Point(cR, cC + 1));
-		}
-	}
-	if(cR >= 5 && gameMap[cR - 1][cC] == 2)
-	{
-		if(!isInNodes(cR - 1, cC, vNodes))
-		{
-			currentNodes.push(new Point(cR - 1, cC));
-		}
-	}
-	if(cR <= 13 && gameMap[cR + 1][cC] == 2)
-	{
-		if(!isInNodes(cR +1, cC, vNodes))
-		{
-			currentNodes.push(new Point(cR + 1, cC));
-		}
-	}
-	if(currentNodes.length == 0 || pathFound.length > 0 || 
-		vNodes.length > 30)
-	{
-		return;
-	}
-	
-	for(let i = 0; i < currentNodes.length; i++)
-	{	
-		vNodes.push(new Point(currentNodes[i].row, currentNodes[i].col));
-		if(currentNodes[i].row == tR &&
-		currentNodes[i].col == tC)
-		{
-			pathFound = copyArray(vNodes);
-			//console.log("Path was found.");
-			return;
-
-		}
-		findRestOfRoute(currentNodes[i].row, currentNodes[i].col, 
-		tR, tC, vNodes);
-	}
-	
 }
 
 

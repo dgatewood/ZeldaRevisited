@@ -78,6 +78,7 @@ let bombNum = 2;
 let keyNum = 5;
 let cursorX = 127;
 let cursorY = -152;
+let BPressed = false;
 
 let currentEquippedItem = -1;
 
@@ -86,6 +87,7 @@ gameMap = maps[119].map;
 
 
 let currentMap = 119;
+let lastMap = 119;
 addMapGameObjects(gameMap, gameObjects);
 let returnToGame = false;
 let needInventoryScreen = false;
@@ -99,6 +101,10 @@ function playSound(source)
 }
 
 function keyDownHandler(e){
+	if(e.keyCode == 66)
+    {
+	   BPressed = true;
+	}
     if(e.keyCode == 37)
     {
 	   leftPressed = true;
@@ -136,6 +142,10 @@ function keyDownHandler(e){
 		if(!needInventoryScreen)
 		{
 			needInventoryScreen = true;
+		}
+		else
+		{
+			canAttackAgain = true;
 		}
 		returnToGame = !returnToGame;
 	}
@@ -311,7 +321,41 @@ function drawLink()
 	}
 	else
 	{
-	if(isAttacking && hasSword)
+		if(BPressed && currentEquippedItem == 3)
+		{
+			animationCounter++;
+			if(animationCounter > 10)
+			{
+				BPressed = false;
+				gO = new GameObject();
+				gO.x = linkX;
+				gO.y = linkY;
+				gO.flame = true;
+				gO.direction = lastButtonPressed;
+				gameObjects.push(gO);
+			}
+			if(lastButtonPressed == "down")
+			{
+				ctx.drawImage(link1, 0, 60, 
+				16, 16, linkX, linkY, 16, 16);
+			}
+			if(lastButtonPressed == "up")
+			{
+				ctx.drawImage(link1, 62, 60, 
+				16, 16, linkX, linkY, 16, 16);
+			}
+			if(lastButtonPressed == "left")
+			{
+				ctx.drawImage(link1, 30, 60, 
+				16, 16, linkX, linkY, 16, 16);
+			}
+			if(lastButtonPressed == "right")
+			{
+				ctx.drawImage(link1, 91, 60, 
+				16, 16, linkX, linkY, 16, 16);
+			}
+		}
+	else if(isAttacking && hasSword)
 	{
 		if(currentAnimation == 0)
 			{
@@ -758,6 +802,58 @@ function drawGameObjects()
 			gameObjects[i].line1X, gameObjects[i].line1Y);
 			ctx.fillText(gameObjects[i].line2Current, 
 			gameObjects[i].line2X, gameObjects[i].line2Y);
+		}
+		if(gameObjects[i].flame)
+		{
+			gameObjects[i].counter+=1;
+			if(gameObjects[i].counter < 8)
+			{
+				if(gameObjects[i].direction == "up")
+				{
+					gameObjects[i].y -= 2;
+				}
+				if(gameObjects[i].direction == "down")
+				{
+					gameObjects[i].y += 2;
+				}
+				if(gameObjects[i].direction == "left")
+				{
+					gameObjects[i].x -= 2;
+				}
+				if(gameObjects[i].direction == "right")
+				{
+					gameObjects[i].x += 2;
+				}
+			}
+			else if(gameObjects[i].counter <  16)
+			{
+				gameObjectCollision(gameObjects[i].x, gameObjects[i].y, gameObjects, 
+							false, false, false, 
+							true, false, gameObjects[i].direction);
+			}
+			else
+			{
+				gameObjects.splice(i, 1);
+				continue;
+			}
+			if(gameObjects[i].counter%5==0)
+			{
+				gameObjects[i].rupeeImage+=1;
+			}
+			if(gameObjects[i].rupeeImage > 1)
+			{
+				gameObjects[i].rupeeImage = 0;
+			}
+			if(gameObjects[i].rupeeImage == 0)
+			{
+				ctx.drawImage(chars2, 158, 11, 16, 16, 
+						gameObjects[i].x, gameObjects[i].y, 16, 16);
+			}
+			else
+			{
+				ctx.drawImage(chars1, 52, 11, 16, 16, 
+						gameObjects[i].x, gameObjects[i].y, 16, 16);
+			}
 		}
 		if(gameObjects[i].isFlame)
 		{
@@ -1331,8 +1427,9 @@ function aStar(start, end, maze)
 
 
 function gameObjectCollision(x, y, objects, isLink, isSword, isBomb, 
-							isCandle, isArrow, direction)
+							isFlame, isArrow, direction)
 {
+
 	if(isLink)
 	{
 		for(let i = 0; i < objects.length; i++)
@@ -1345,7 +1442,9 @@ function gameObjectCollision(x, y, objects, isLink, isSword, isBomb,
 						{
 							gameMap = maps[objects[i].newMap].map;
 							gameObjects = maps[objects[i].newMap].gameobjects;
+							lastMap = currentMap;
 							currentMap = objects[i].newMap;
+							
 							addMapGameObjects(gameMap, gameObjects);
 							if(objects[i].shiftsLeftRight)
 							{
@@ -1601,7 +1700,34 @@ function gameObjectCollision(x, y, objects, isLink, isSword, isBomb,
 					}
 			}
 	}
-	////currently for sword attack
+	else if(isFlame)
+	{
+		for(let i = 0; i < objects.length; i++)
+			{
+					if (x <= objects[i].x + objects[i].width &&
+					x + 16>= objects[i].x &&
+					y  <= objects[i].y + objects[i].height &&
+					y + 16>= objects[i].y ) 
+					{
+						if(objects[i].isEnemy)
+								{
+									//
+									objects[i].health -= 1;
+									objects[i].needsBounce = true;
+									getBounceLoc(objects[i], false,
+											direction);
+									if(objects[i].health == 0)
+									{
+										playSound("./sounds/LOZ_enemy_die.wav");
+									}
+									else
+									{
+										playSound("./sounds/LOZ_enemy_hit.wav");
+									}
+								}
+					}
+			}
+	}
 	else
 	{
 		let swordW = 11;
@@ -1960,10 +2086,40 @@ function drawHUD(offset)
 		ctx.drawImage(hud, 555, 137, 8, 16, 
 				152 , 24 + offset, 8, 16);
 	}
+	if(currentEquippedItem > -1)
+	{
+		switch(currentEquippedItem)
+		{
+			case 0:
+				break;
+			case 1:
+				break;
+			case 2:
+				break;
+			case 3:
+				ctx.drawImage(link1, 393, 195, 8, 16, 
+								128, 24 + offset, 8, 16);
+				break;
+		}
+	}
 	
 	///Fill map location in with gray
 	ctx.fillStyle = "gray";
 	ctx.fillRect(16, 8 + offset, 64, 48);
+	let linkLoc = 0;
+	if(currentMap > 127)
+	{
+		linkLoc = lastMap;
+	}
+	else
+	{
+		linkLoc = currentMap;
+	}	
+	
+	let mapCol = linkLoc%16;
+	let mapRow = Math.floor(linkLoc/16);
+	ctx.fillStyle = "green";
+	ctx.fillRect(16 + (mapCol * 4), 8 + (mapRow * 6), 4, 6);
 }
 
 function drawGameStart()
@@ -2131,9 +2287,9 @@ function drawInventoryScreen(offset)
 		ctx.drawImage(link1, 393, 195, 8, 16, 
 							204, 48 + offset - 200, 8, 16);
 	}
-	if(cursorX == 172 && cursorY == 48)
+	if(isAttacking)
 	{
-		if(isAttacking)
+		if(cursorX == 202 && cursorY == -152)
 		{
 			currentEquippedItem = 3;
 			isAttacking = false;
